@@ -14,7 +14,6 @@ Resources:
       Description: 'CCBD Project: Lambda function for trading card upload'
       MemorySize: 128
       Timeout: 15
-      Role: 'arn:aws:iam::958611120422:role/MINT_lambda_roles'
   ## lambda to query sagemaker
   MINTLF2:
     Type: 'AWS::Serverless::Function'
@@ -26,7 +25,3 @@ Resources:
       Description: 'CCBD Project: Lambda function for trading card label prediction'
       MemorySize: 128
       Timeout: 15
-      Role: 'arn:aws:iam::958611120422:role/MINT_lambda_roles'
-      Policies:
-        S3ReadPolicy:
-          BucketName: !Ref ImageBucket
