@@ -3,10 +3,6 @@ Transform: 'AWS::Serverless-2016-10-31'
 Description: CD Lambda Deployment for Mint Condition Project
 
 Resources:
-  ImageBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: 'mint-condition-b1'
   ## Lambda to upload images
   MINTLF1:
     Type: 'AWS::Serverless::Function'
@@ -19,19 +15,8 @@ Resources:
       MemorySize: 128
       Timeout: 15
       Role: 'arn:aws:iam::958611120422:role/MINT_lambda_roles'
-      Events:
-        S3PutObjectEvent:
-          Type: S3
-          Properties:
-            Bucket: !Ref ImageBucket
-            Events: s3:ObjectCreated:*
-            Filter:
-              S3Key:
-                Rules:
-                  - Name: prefix
-                    Value: images/
   ## lambda to query sagemaker
-  MINFLF2:
+  MINTLF2:
     Type: 'AWS::Serverless::Function'
     Properties:
       FunctionName: MINT_LF2_image_detection
