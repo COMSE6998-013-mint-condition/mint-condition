@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: CD Lambda Deployment for Mint Condition Project
+
+Resources:
+  ImageBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: 'mint-condition-b1'
+  ## Lambda to upload images
+  MINTLF1:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: MINT_LF1_image_upload
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.9
+      CodeUri: ./lambda_functions/LF1_image_upload
+      Description: 'CCBD Project: Lambda function for trading card upload'
+      MemorySize: 128
+      Timeout: 15
+      Role: 'arn:aws:iam::958611120422:role/MINT_lambda_roles'
+      Events:
+        S3PutObjectEvent:
+          Type: S3
+          Properties:
+            Bucket: !Ref ImageBucket
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: images/
+  ## lambda to query sagemaker
+  MINFLF2:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: MINT_LF2_image_detection
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.9
+      CodeUri: ./lambda_functions/LF2_image_detection
+      Description: 'CCBD Project: Lambda function for trading card label prediction'
+      MemorySize: 128
+      Timeout: 15
+      Role: 'arn:aws:iam::958611120422:role/MINT_lambda_roles'
+      Policies:
+        S3ReadPolicy:
+          BucketName: !Ref ImageBucket
+  ## required for S3 upload to trigger Lamdba
+  LambdaInvokePermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      FunctionName: !GetAtt MINTLF1.Arn
+      Action: 'lambda:InvokeFunction'
+      Principal: 's3.amazonaws.com'
+      SourceAccount: !Sub ${AWS::AccountId}
+      SourceArn: !GetAtt ImageBucket.Arn
