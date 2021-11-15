@@ -30,12 +30,3 @@ Resources:
       Policies:
         S3ReadPolicy:
           BucketName: !Ref ImageBucket
-  ## required for S3 upload to trigger Lamdba
-  LambdaInvokePermission:
-    Type: 'AWS::Lambda::Permission'
-    Properties:
-      FunctionName: !GetAtt MINTLF1.Arn
-      Action: 'lambda:InvokeFunction'
-      Principal: 's3.amazonaws.com'
-      SourceAccount: !Sub ${AWS::AccountId}
-      SourceArn: !GetAtt ImageBucket.Arn
