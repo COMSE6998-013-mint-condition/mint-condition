@@ -14,7 +14,7 @@ Resources:
       Description: 'CCBD Project: Lambda function for trading card upload'
       MemorySize: 128
       Timeout: 15
-  ## lambda to query sagemaker
+  ## Lambda to query sagemaker
   MINTLF2:
     Type: 'AWS::Serverless::Function'
     Properties:
