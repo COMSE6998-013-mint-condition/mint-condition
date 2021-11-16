@@ -6,5 +6,5 @@ phases:
 artifacts:
   type: zip
   files:
-    - samTemplate.yaml
-    - outputsamtemplate.yml
+    - Backend/samTemplate.yaml
+    - Backend/outputsamtemplate.yml
