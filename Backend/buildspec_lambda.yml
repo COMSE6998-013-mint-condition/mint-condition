@@ -2,9 +2,8 @@ version: 0.1
 phases:
   install:
     commands:
-      - aws cloudformation package --template-file samTemplate.yaml --s3-bucket ccbd-mint-lambda-pipeline --output-template-file outputsamtemplate.yml
+      - aws cloudformation package --template-file ./Backend/samTemplate.yaml --s3-bucket ccbd-mint-lambda-pipeline --output-template-file ./Backend/outputsamtemplate.yml
 artifacts:
-  type: zip
   files:
     - Backend/samTemplate.yaml
     - Backend/outputsamtemplate.yml
