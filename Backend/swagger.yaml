@@ -82,6 +82,30 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
+    delete:
+      summary: delete card 
+      description: delete specified card
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: Numeric ID of the card to delete
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Deleted card
+          schema:
+            $ref: '#/definitions/Card'
+        '403':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
 
   /card:
     post:
@@ -98,7 +122,7 @@ paths:
         - application/json
       responses:
         '200':
-          description: Updated user
+          description: Updated card
           schema:
             $ref: '#/definitions/Card'
         '403':
@@ -155,6 +179,31 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
+    delete:
+      summary: delete user 
+      description: delete specified user
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: Numeric ID of the user to delete
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Deleted user
+          schema:
+            $ref: '#/definitions/User'
+        '403':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
 
   /user:
     post:
