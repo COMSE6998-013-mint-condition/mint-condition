@@ -1,0 +1,291 @@
+swagger: '2.0'
+info:
+  title: Mint Condition
+  description: 'Backend API for Mint Condition: classifying trading cards'
+  version: 1.0.0
+schemes:
+  - https
+basePath: /v1
+produces:
+  - application/json
+paths:
+  /login:
+    post:
+      summary: login to the system
+      description: "Authorize user"
+      operationId: login
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: login confirmed
+          schema:
+            $ref: '#/definitions/LoginResponse'
+        '403':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+          
+  /upload:
+    put:
+      summary: trading card upload
+      description: This API takes in the multi-part body/binary sent to it (ex. a trading card) and uploads it to an S3 bucket.
+      operationId: uploadPhoto
+      consumes:
+        - image/png
+        - image/jpg
+        - image/jpeg
+        - image/bmp
+        - image/gif
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: S3 PUT operation response
+          schema:
+            type: object
+        '403':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  
+  /card/{id}:
+    get:
+      summary: get card information
+      description: get information regarding the specified card
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: Numeric ID of the card to get
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Card metadata
+          schema:
+            $ref: '#/definitions/Card'
+        '403':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /card:
+    post:
+      summary: update card information
+      description: update information regarding the specified card
+      parameters:
+        - in: body
+          name: body
+          required: true
+          description: updated card metadata
+          schema:
+            $ref: '#/definitions/CardUpdate'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Updated user
+          schema:
+            $ref: '#/definitions/Card'
+        '403':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+            
+  /cards:
+    get:
+      summary: get all cards for user
+      description: get all the user's cards
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: All card metadata
+          schema:
+            $ref: '#/definitions/Cards'
+        '403':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+            
+  /user/{id}:
+    get:
+      summary: get user information
+      description: get information regarding the user
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: Numeric ID of the user to get
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: User metadata
+          schema:
+            $ref: '#/definitions/User'
+        '403':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /user:
+    post:
+      summary: update user information
+      description: update information regarding the user
+      parameters:
+        - in: body
+          name: body
+          required: true
+          description: updated user metadata
+          schema:
+            $ref: '#/definitions/UserUpdate'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Updated user
+          schema:
+            $ref: '#/definitions/User'
+        '403':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  
+  
+  /search:
+    get:
+      summary: photo search method
+      description: This API takes in a search query as a query parameter and returns zero or more cards that match the search query (label or condition).
+      operationId: searchCards
+      parameters:
+        - in: query
+          name: label
+          type: string
+          description: the label string to be searched
+        - in: query
+          name: condition
+          type: string
+          description: the condition string to be searched
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: search results
+          schema:
+            $ref: '#/definitions/Cards'
+        '403':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+definitions:
+  LoginResponse:
+    type: string
+    example: "Authorized"
+
+  Card:
+    type: object
+    properties:
+      card_id:
+        type: integer
+        format: int32
+      url:
+        type: string
+      labels:
+        type: array
+        items:
+          type: string
+      condition_label:
+        type: string
+      condition_desc:
+        type: string
+      owner_name:
+        type: string
+        
+  Cards:
+    type: object
+    properties:
+      cards:
+        type: array
+        items:
+          $ref: "#/definitions/Card"
+          
+  CardUpdate:
+    type: object
+    properties:
+      card_id:
+        type: integer
+        format: int32
+      labels:
+        type: array
+        items:
+          type: string
+          
+  User:
+    type: object
+    properties:
+      user_id:
+        type: integer
+        format: int32
+      name:
+        type: string
+      email:
+        type: string
+        
+  UserUpdate:
+    type: object
+    properties:
+      user_id:
+        type: integer
+        format: int32
+      name:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+  
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
