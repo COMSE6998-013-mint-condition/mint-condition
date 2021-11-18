@@ -217,7 +217,6 @@ paths:
 definitions:
   LoginResponse:
     type: string
-    example: "Authorized"
 
   Card:
     type: object
