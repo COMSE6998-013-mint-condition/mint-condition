@@ -1,12 +1,41 @@
 import json
+import urllib.parse
+import boto3
+
+s3=boto3.client('s3')
 
 def lambda_handler(event, context):
-    # TODO implement
-     return {
-        'statusCode': 200,
-        'headers': {
-            'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Accept,x-amz-meta-customLabels',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,PUT,GET'
-        }
-    }
+
+    bucket = event['Records'][0]['s3']['bucket']['name']
+    key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
+
+    condition = invoke_sagemaker(bucket, key)
+    upload_to_rds(bucket, key, condition)
+    upload_to_opensearch(bucket, key, condition)
+
+
+
+
+def get_s3_metadata(photo, bucket):
+    response = s3.head_object(Bucket=bucket, Key=photo)
+    return response
+
+
+# TODO
+def invoke_sagemaker(bucket, key):
+    return ""
+
+
+def upload_to_rds(bucket, key, condition):
+    s3_data = get_s3_metadata(key, bucket)
+    label = s3_data['ResponseMetadata']['HTTPHeaders']['x-amz-meta-customlabels'] if 'x-amz-meta-customlabels' in s3_data['ResponseMetadata']['HTTPHeaders'] else ""
+    date_created = s3_data['LastModified']
+    user_id = s3_data['ResponseMetadata']['HTTPHeaders']['x-amz-meta-user']
+    print(label)
+    print(user_id)
+    print(date_created)
+
+
+# TODO
+def uplad_to_opensearch(bucket, key, user, condition):
+    return

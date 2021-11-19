@@ -43,6 +43,19 @@ paths:
         - image/gif
       produces:
         - application/json
+      parameters:
+        - name: X-Key
+          in: header
+          type: string
+          required: true
+        - name: x-amz-meta-customLabels
+          in: header
+          type: string
+          required: true
+        - name: x-amz-meta-user
+          in: header
+          type: string
+          required: true
       responses:
         '200':
           description: S3 PUT operation response
@@ -67,6 +80,10 @@ paths:
           type: integer
           required: true
           description: Numeric ID of the card to get
+        - name: x-amz-meta-user
+          in: header
+          type: string
+          required: true
       produces:
         - application/json
       responses:
@@ -91,6 +108,10 @@ paths:
           type: integer
           required: true
           description: Numeric ID of the card to delete
+        - name: x-amz-meta-user
+          in: header
+          type: string
+          required: true
       produces:
         - application/json
       responses:
@@ -118,6 +139,10 @@ paths:
           description: updated card metadata
           schema:
             $ref: '#/definitions/CardUpdate'
+        - name: x-amz-meta-user
+          in: header
+          type: string
+          required: true
       produces:
         - application/json
       responses:
@@ -140,6 +165,11 @@ paths:
       description: get all the user's cards
       produces:
         - application/json
+      parameters:
+        - name: x-amz-meta-user
+          in: header
+          type: string
+          required: true
       responses:
         '200':
           description: All card metadata
@@ -247,6 +277,10 @@ paths:
           name: condition
           type: string
           description: the condition string to be searched
+        - name: x-amz-meta-user
+          in: header
+          type: string
+          required: true
       produces:
         - application/json
       responses:
@@ -263,6 +297,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
+
 definitions:
   LoginResponse:
     type: string
@@ -275,10 +310,8 @@ definitions:
         format: int32
       url:
         type: string
-      labels:
-        type: array
-        items:
-          type: string
+      label: 
+        type: string
       condition_label:
         type: string
       condition_desc:
