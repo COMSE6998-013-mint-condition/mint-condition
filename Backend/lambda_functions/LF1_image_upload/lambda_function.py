@@ -37,5 +37,5 @@ def upload_to_rds(bucket, key, condition):
 
 
 # TODO
-def uplad_to_opensearch(bucket, key, user, condition):
+def upload_to_opensearch(bucket, key, user, condition):
     return
