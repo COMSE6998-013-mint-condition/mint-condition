@@ -1,5 +1,10 @@
 import json
 
+
+'''
+Refer to https://stackoverflow.com/questions/49715482/how-to-access-the-url-that-invoked-my-lambda-function for event schema
+'''
+
 def lambda_handler(event, context):
     path =  event["path"]
     user = event['headers']['x-amz-meta-user']
@@ -28,7 +33,7 @@ def lambda_handler(event, context):
         else:
             return raise_method_not_allowed()
 
-    elif path == "/search":
+    elif path.contains("/search"):
         if httpMethod == "GET":
             #TODO Search OpenSearch
             return dummy_response()
