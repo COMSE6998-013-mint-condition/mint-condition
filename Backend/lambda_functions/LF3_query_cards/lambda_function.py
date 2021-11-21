@@ -6,6 +6,7 @@ Refer to https://stackoverflow.com/questions/49715482/how-to-access-the-url-that
 '''
 
 def lambda_handler(event, context):
+    print(event)
     path =  event["path"]
     user = event['headers']['x-amz-meta-user']
     httpMethod = event['httpMethod']
