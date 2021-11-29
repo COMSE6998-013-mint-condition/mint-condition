@@ -11,6 +11,7 @@ phases:
       - ls -la
       - ls Backend/lambda_functions/LF4_ebay_notification -la
 artifacts:
+  type: zip
   files:
     - Backend/samTemplate.yaml
     - Backend/outputsamtemplate.yml
