@@ -170,7 +170,10 @@ bower_components
 build/Release
 
 #Exclude from ignoring anything in Lambda Layer
-!Backend/lambda_layers/**
+!Backend/lambda_layers
+!./Backend/lambda_layers
+!./Backend/lambda_layers/*
+!./Backend/lambda_layers/node_modules
 
 # Dependency directories
 node_modules/
