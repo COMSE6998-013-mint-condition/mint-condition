@@ -47,5 +47,3 @@ Resources:
       Description: 'CCBD Project: Lambda function for ebay notification'
       MemorySize: 128
       Timeout: 15
-      Layers:
-         - !Ref EventNotificationsSDKlayer
