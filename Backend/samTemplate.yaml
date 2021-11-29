@@ -3,18 +3,6 @@ Transform: 'AWS::Serverless-2016-10-31'
 Description: CD Lambda Deployment for Mint Condition Project
 
 Resources:
-  ## Ebay SDK Layer
-  EventNotificationsSDKlayer:
-    Type: AWS::Serverless::LayerVersion
-    Properties:
-      LayerName: event-notification-nodejs-sdk
-      Description: Ebay Event Notifications SDK
-      ContentUri: ./lambda_layers/event-notification-nodejs-sdk
-      CompatibleRuntimes:
-        - nodejs12.x
-        - nodejs14.x
-      LicenseInfo: 'Available under the MIT-0 license.'
-      RetentionPolicy: Retain
   ## Lambda to upload images
   MINTLF1:
     Type: 'AWS::Serverless::Function'

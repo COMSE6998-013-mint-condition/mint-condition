@@ -169,17 +169,6 @@ bower_components
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
 
-#Exclude from ignoring anything in Lambda Layer
-!Backend/lambda_layers
-!./Backend/lambda_layers
-!./Backend/lambda_layers/*
-!./Backend/lambda_layers/node_modules
-
-# Dependency directories
-node_modules/
-**/node_modules/
-
-
 jspm_packages/
 
 # Snowpack dependency directory (https://snowpack.dev/)
