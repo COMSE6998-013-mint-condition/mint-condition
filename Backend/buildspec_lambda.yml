@@ -12,6 +12,4 @@ phases:
       - ls Backend/lambda_functions/LF4_ebay_notification -la
 artifacts:
   files:
-    - Backend/samTemplate.yaml
-    - Backend/outputsamtemplate.yml
-    - Backend/lambda_functions/**/*
+    - '**/*'
