@@ -1,6 +1,6 @@
 version: 0.1
 phases:
-  build:
+  pre_build:
     commands:
       - npm --prefix ./Backend/lambda_functions/LF4_ebay_notification install
   install:
