@@ -13,6 +13,4 @@ phases:
 artifacts:
   type: zip
   files:
-    - Backend/samTemplate.yaml
-    - Backend/outputsamtemplate.yml
-    - Backend/lambda_functions/LF4_ebay_notification/**/*
+    - **/*
