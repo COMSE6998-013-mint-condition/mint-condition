@@ -36,3 +36,14 @@ Resources:
       Description: 'CCBD Project: Lambda function for querying trading cards'
       MemorySize: 128
       Timeout: 15
+  ## Lambda for Ebay Account Deletion Notification: https://developer.ebay.com/marketplace-account-deletion#optingOut
+  MINTLF4:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: MINT_LF4_ebay_notification
+      Handler: lambda_function.lambda_handler
+      Runtime: nodejs14
+      CodeUri: ./lambda_functions/LF4_ebay_notification
+      Description: 'CCBD Project: Lambda function for ebay notification'
+      MemorySize: 128
+      Timeout: 15
