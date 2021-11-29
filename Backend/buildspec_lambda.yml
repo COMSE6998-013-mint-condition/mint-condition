@@ -1,8 +1,10 @@
 version: 0.1
 phases:
-  install:
+  build:
     commands:
       - npm --prefix ./lambda_functions/LF4_ebay_notification install
+  install:
+    commands:
       - aws cloudformation package --template-file ./Backend/samTemplate.yaml --s3-bucket ccbd-mint-lambda-pipeline --output-template-file ./Backend/outputsamtemplate.yml
 artifacts:
   files:
