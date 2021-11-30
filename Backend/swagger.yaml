@@ -241,11 +241,7 @@ definitions:
     properties:
       user_id:
         type: string
-      name:
-        type: string
       email:
-        type: string
-      phone:
         type: string
   
   Error:

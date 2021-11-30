@@ -160,8 +160,6 @@ def lambda_handler(event, context):
         user_obj = {
             "user_id": event["requestContext"]["authorizer"]["claims"]["\"cognito:username\""],
             "email": event["requestContext"]["authorizer"]["claims"]["email"],
-            "phone": event["requestContext"]["authorizer"]["claims"]["phone_number"],
-            "name": event["requestContext"]["authorizer"]["claims"]["name"]
         }
 
         return real_response(user_obj)
