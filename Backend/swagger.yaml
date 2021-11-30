@@ -127,8 +127,6 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
-
-  /card:
     post:
       summary: update card information
       description: update information regarding the specified card
@@ -332,9 +330,6 @@ definitions:
   CardUpdate:
     type: object
     properties:
-      card_id:
-        type: integer
-        format: int32
       labels:
         type: array
         items:

@@ -16,9 +16,8 @@ def lambda_handler(event, context):
     print(event)
     path =  event["path"]
     user_id = event['headers']['x-amz-meta-user']
+    user_name = "STUB" #TODO get username from incognito
     httpMethod = event['httpMethod']
-
-    #TODO get user_id from incognito, if not avail or does not exist throw error
 
     #TODO: price range, pagination, date range
     if path == "/cards":
@@ -27,12 +26,12 @@ def lambda_handler(event, context):
              with rdsConn:
                 with rdsConn.cursor() as cursor:
                     sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                    `users`.`name` as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
+                    %s as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
                     FROM `cards`
                     LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
                     LEFT JOIN `users` ON `cards.`user_id` = `users`.`user_id`
                     WHERE `cards`.`user_id` = %s"""
-                    cursor.execute(sql, (str(user_id),))
+                    cursor.execute(sql, (user_name, str(user_id),))
                     cards = { "cards" : [] } if cursor.rowcount == 0 else { "cards": cursor.fetchall() }
                     return real_response(cards)
         else:
@@ -41,20 +40,20 @@ def lambda_handler(event, context):
     elif path == "/card":
         if httpMethod == "POST": #assuming comma separated vals
 
-            #TODO get card for specified id (/card/{id}). get labels too
-            card_id = 1
-            labels = ['a', 'b']
-            
-            additionalLabels = ",".join(labels)
+            if not hasattr(event['pathParameters'], 'id'):
+                return unexpected_error("id not provided")
+
+            if not hasattr(event['body'], 'labels'):
+                return unexpected_error("labels not provided")
+
+            card_id = event['pathParameters']['id']
+            labels = ",".join(event['body']['labels'])
 
             with rdsConn:
 
                 with rdsConn.cursor() as cursor:
-                    sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                    `users`.`name` as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
+                    sql = """SELECT `card_id` 
                     FROM `cards`
-                    LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
-                    LEFT JOIN `users` ON `cards.`user_id` = `users`.`user_id`
                     WHERE `cards`.`user_id` = %s
                         AND `cards`.`card_id` = %s"""
                     cursor.execute(sql, (str(user_id), str(card_id),))
@@ -63,8 +62,8 @@ def lambda_handler(event, context):
                     
                     card = cursor.fetchone()
 
-                    sql = "UPDATE `cards` SET `card_label` = CONCAT_WS(',', `card_label`, %s) WHERE `card_id` = %s"
-                    cursor.execute(sql, (additionalLabels, str(card_id),))
+                    sql = "UPDATE `cards` SET `card_label` = %s WHERE `card_id` = %s"
+                    cursor.execute(sql, (labels, str(card_id),))
 
                 rdsConn.commit()
 
@@ -73,17 +72,16 @@ def lambda_handler(event, context):
                 with rdsConn.cursor() as cursor:
                     
                     sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                    `users`.`name` as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
+                    %s as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
                     FROM `cards`
                     LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
-                    LEFT JOIN `users` ON `cards.`user_id` = `users`.`user_id`
                     WHERE `cards`.`user_id` = %s
                         AND `cards`.`card_id` = %s"""
-                    cursor.execute(sql, (str(user_id), str(card_id),))
+                    cursor.execute(sql, (user_name, str(user_id), str(card_id),))
 
                     #bad implementation: theoretically could have been deleted between this and first part (cut corners)
                     return real_response(cursor.fetchone())
-                    
+
 
                 return real_response(card)
 
@@ -93,39 +91,42 @@ def lambda_handler(event, context):
     elif path.contains("/card/"):
         if httpMethod == "GET":
 
-            #TODO get card for specified id (/card/{id}). 
-            card_id = 1
+            if not hasattr(event['pathParameters'], 'id'):
+                return unexpected_error("id not provided")
+
+            card_id = event['pathParameters']['id']
 
             with rdsConn:
                 with rdsConn.cursor() as cursor:
                     sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                    `users`.`name` as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
+                    %s as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
                     FROM `cards`
                     LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
-                    LEFT JOIN `users` ON `cards.`user_id` = `users`.`user_id`
                     WHERE `cards`.`user_id` = %s
                         AND `cards`.`card_id` = %s"""
-                    cursor.execute(sql, (str(user_id), str(card_id),))
+                    cursor.execute(sql, (user_name, str(user_id), str(card_id),))
                     card = {} if cursor.rowcount == 0 else cursor.fetchone()
                     return real_response(card)
 
         elif httpMethod == "DELETE":
 
-            #TODO get card for specified id (/card/{id}).
-            card_id = 1
+            if not hasattr(event['pathParameters'], 'id'):
+                return unexpected_error("id not provided")
+
+            card_id = event['pathParameters']['id']
+
             card = {}
 
             with rdsConn:
 
                 with rdsConn.cursor() as cursor:
                     sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                    `users`.`name` as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
+                    %s as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
                     FROM `cards`
                     LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
-                    LEFT JOIN `users` ON `cards.`user_id` = `users`.`user_id`
                     WHERE `cards`.`user_id` = %s
                         AND `cards`.`card_id` = %s"""
-                    cursor.execute(sql, (str(user_id), str(card_id),))
+                    cursor.execute(sql, (user_name, str(user_id), str(card_id),))
                     if cursor.rowcount == 0:
                         return unexpected_error("card not found for user")
                     
