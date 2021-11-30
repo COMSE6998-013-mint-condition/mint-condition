@@ -310,6 +310,8 @@ definitions:
         format: int32
       url:
         type: string
+      value:
+        type: string
       label: 
         type: string
       condition_label:

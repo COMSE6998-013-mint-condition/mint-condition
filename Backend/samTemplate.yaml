@@ -9,11 +9,13 @@ Resources:
     Properties:
       FunctionName: MINT_LF1_image_upload
       Handler: lambda_function.lambda_handler
-      Runtime: python3.9
+      Runtime: python3.8
       CodeUri: ./lambda_functions/LF1_image_upload
       Description: 'CCBD Project: Lambda function for trading card upload'
       MemorySize: 128
       Timeout: 15
+      Layers: 
+         - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-PyMySQL:4
   ## Lambda to query sagemaker
   MINTLF2:
     Type: 'AWS::Serverless::Function'
@@ -31,11 +33,13 @@ Resources:
     Properties:
       FunctionName: MINT_LF3_query_cards
       Handler: lambda_function.lambda_handler
-      Runtime: python3.9
+      Runtime: python3.8
       CodeUri: ./lambda_functions/LF3_query_cards
       Description: 'CCBD Project: Lambda function for querying trading cards'
       MemorySize: 128
       Timeout: 15
+      Layers: 
+         - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-PyMySQL:4
   ## Lambda for Ebay Account Deletion Notification: https://developer.ebay.com/marketplace-account-deletion#optingOut
   MINTLF4:
     Type: 'AWS::Serverless::Function'
