@@ -62,7 +62,7 @@ exports.handler = async function (event, context, done) {
     let slack_status;
     let slack_processResult;
 
-    if (event && event.requestContext.http.method === 'GET' && event.queryStringParameters && event.queryStringParameters.challenge_code) {
+    if (event && event.requestContext.httpMethod === 'GET' && event.queryStringParameters && event.queryStringParameters.challenge_code) {
         try {
             const challengeResponse = EventNotificationSDK.validateEndpoint(
                 event.queryStringParameters.challenge_code,
@@ -90,7 +90,7 @@ exports.handler = async function (event, context, done) {
                 body: JSON.stringify(`Endpoint validation failure: ${e}`)
             };
         }
-    } else if (event && event.requestContext.http.method === 'POST') {
+    } else if (event && event.requestContext.httpMethod === 'POST') {
 
         let bodyParsed = JSON.parse(event.body);
         let responseCode = 0;
