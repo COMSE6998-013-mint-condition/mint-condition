@@ -11,7 +11,7 @@ function Login(){
   const history = useNavigate();
   const routeChange = () =>{ 
     let path = 'https://mintcondition2.auth.us-east-1.amazoncognito.com/signup?response_type=code&client_id=55gonmd5[…]ntcondition2.auth.us-east-1.amazoncognito.com'; 
-    history(path);
+    window.location.href = path; 
     console.log("nice");
   }
 
