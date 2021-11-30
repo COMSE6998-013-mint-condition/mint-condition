@@ -8,7 +8,7 @@ Refer to https://stackoverflow.com/questions/49715482/how-to-access-the-url-that
 def lambda_handler(event, context):
     print(event)
     path =  event["path"]
-    user = event['headers']['context']['authorizer']['claims']['\"cognito:username\"']
+    user = event['requestContext']['authorizer']['claims']['cognito:username']
     httpMethod = event['httpMethod']
     if path == "/cards":
         if httpMethod == "GET":
