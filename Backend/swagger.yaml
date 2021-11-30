@@ -245,6 +245,8 @@ definitions:
         type: string
       email:
         type: string
+      phone:
+        type: string
   
   Error:
     type: object
