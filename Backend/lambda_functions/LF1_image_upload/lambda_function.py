@@ -8,7 +8,7 @@ def lambda_handler(event, context):
 
     bucket = event['Records'][0]['s3']['bucket']['name']
     key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
-    user_id = event['headers']['context']['authorizer']['claims']['\"cognito:username\"']
+    user_id = event['requestContext']['authorizer']['claims']['\"cognito:username\"']
     
     condition = invoke_sagemaker(bucket, key)
     upload_to_rds(bucket, key, condition, user_id)
