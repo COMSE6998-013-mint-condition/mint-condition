@@ -158,7 +158,7 @@ def lambda_handler(event, context):
         card_id = event['pathParameters']['id']
 
         user_obj = {
-            "user_id": event["requestContext"]["authorizer"]["claims"]["\"cognito:username\""],
+            "user_id": event["requestContext"]["authorizer"]["claims"]["cognito:username"],
             "email": event["requestContext"]["authorizer"]["claims"]["email"],
         }
 
