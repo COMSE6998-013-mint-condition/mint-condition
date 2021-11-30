@@ -25,6 +25,10 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/Error'
+        '405':
+          description: Method Not Defined
+          schema:
+            $ref: '#/definitions/Error'
         '500':
           description: Unexpected error
           schema:
@@ -65,6 +69,10 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/Error'
+        '405':
+          description: Method Not Defined
+          schema:
+            $ref: '#/definitions/Error'
         '500':
           description: Unexpected error
           schema:
@@ -95,6 +103,10 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/Error'
+        '405':
+          description: Method Not Defined
+          schema:
+            $ref: '#/definitions/Error'
         '500':
           description: Unexpected error
           schema:
@@ -121,6 +133,10 @@ paths:
             $ref: '#/definitions/Card'
         '403':
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '405':
+          description: Method Not Defined
           schema:
             $ref: '#/definitions/Error'
         '500':
@@ -154,6 +170,10 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/Error'
+        '405':
+          description: Method Not Defined
+          schema:
+            $ref: '#/definitions/Error'
         '500':
           description: Unexpected error
           schema:
@@ -177,6 +197,10 @@ paths:
             $ref: '#/definitions/Cards'
         '403':
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '405':
+          description: Method Not Defined
           schema:
             $ref: '#/definitions/Error'
         '500':
@@ -205,6 +229,10 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/Error'
+        '405':
+          description: Method Not Defined
+          schema:
+            $ref: '#/definitions/Error'
         '500':
           description: Unexpected error
           schema:
@@ -227,6 +255,10 @@ paths:
             $ref: '#/definitions/User'
         '403':
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '405':
+          description: Method Not Defined
           schema:
             $ref: '#/definitions/Error'
         '500':
@@ -255,6 +287,10 @@ paths:
             $ref: '#/definitions/User'
         '403':
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '405':
+          description: Method Not Defined
           schema:
             $ref: '#/definitions/Error'
         '500':
@@ -290,6 +326,10 @@ paths:
             $ref: '#/definitions/Cards'
         '403':
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '405':
+          description: Method Not Defined
           schema:
             $ref: '#/definitions/Error'
         '500':

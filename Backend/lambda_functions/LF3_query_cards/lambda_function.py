@@ -24,7 +24,7 @@ def lambda_handler(event, context):
         else:
             return raise_method_not_allowed()
 
-    elif path.contains("/card/"):
+    elif "/card/" in path:
         if httpMethod == "GET":
             #TODO get card for specified id (/card/{id}). Check if user has access to specified ID
             return dummy_response()
@@ -34,7 +34,7 @@ def lambda_handler(event, context):
         else:
             return raise_method_not_allowed()
 
-    elif path.contains("/search"):
+    elif "search" in path:
         if httpMethod == "GET":
             #TODO Search OpenSearch
             return dummy_response()
