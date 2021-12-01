@@ -1,5 +1,8 @@
 import json
 import pymysql
+import boto3
+
+s3=boto3.client('s3')
 
 '''
 Refer to https://stackoverflow.com/questions/49715482/how-to-access-the-url-that-invoked-my-lambda-function for event schema
@@ -25,12 +28,12 @@ def lambda_handler(event, context):
              with rdsConn:
                 with rdsConn.cursor() as cursor:
                     sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                    user_id as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
+                    user_id as `owner_name`, `cards`.`card_id`, `card_bucket`, `card_s3_key`, `card_value` as `value`
                     FROM `cards`
                     LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
                     WHERE `cards`.`user_id` = %s"""
                     cursor.execute(sql, (str(user_id),))
-                    cards = { "cards" : [] } if cursor.rowcount == 0 else { "cards": cursor.fetchall() }
+                    cards = { "cards" : [] } if cursor.rowcount == 0 else { "cards": process_cards_obj(cursor.fetchall()) }
                     return real_response(cards)
         else:
             return raise_method_not_allowed()
@@ -70,15 +73,16 @@ def lambda_handler(event, context):
                 with rdsConn.cursor() as cursor:
                     
                     sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                    user_id as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
+                    user_id as `owner_name`, `cards`.`card_id`, `card_bucket`, `card_s3_key`, `card_value` as `value`
                     FROM `cards`
                     LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
                     WHERE `cards`.`user_id` = %s
                         AND `cards`.`card_id` = %s"""
+                    
                     cursor.execute(sql, (str(user_id), str(card_id),))
 
                     #bad implementation: theoretically could have been deleted between this and first part (cut corners)
-                    return real_response(cursor.fetchone())
+                    return real_response(process_card_obj(cursor.fetchone()))
 
         else:
             return raise_method_not_allowed()
@@ -94,14 +98,14 @@ def lambda_handler(event, context):
             with rdsConn:
                 with rdsConn.cursor() as cursor:
                     sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                    user_id as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
+                    user_id as `owner_name`, `cards`.`card_id`, `card_bucket`, `card_s3_key`, `card_value` as `value`
                     FROM `cards`
                     LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
                     WHERE `cards`.`user_id` = %s
                         AND `cards`.`card_id` = %s"""
                     cursor.execute(sql, (str(user_id), str(card_id),))
                     card = {} if cursor.rowcount == 0 else cursor.fetchone()
-                    return real_response(card)
+                    return real_response(process_card_obj(card))
 
         elif httpMethod == "DELETE":
 
@@ -116,7 +120,7 @@ def lambda_handler(event, context):
 
                 with rdsConn.cursor() as cursor:
                     sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                    user_id as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
+                    user_id as `owner_name`, `cards`.`card_id`, `card_bucket`, `card_s3_key`, `card_value` as `value`
                     FROM `cards`
                     LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
                     WHERE `cards`.`user_id` = %s
@@ -125,7 +129,7 @@ def lambda_handler(event, context):
                     if cursor.rowcount == 0:
                         return unexpected_error("card not found for user")
                     
-                    card = cursor.fetchone()
+                    card = process_card_obj(cursor.fetchone())
 
                 with rdsConn.cursor() as cursor:
                     sql = "DELETE FROM `cards` WHERE `card_id` = %s"
@@ -162,7 +166,38 @@ def lambda_handler(event, context):
     else:
         return raise_method_not_allowed()
 
+def process_cards_obj(cards):
+    
+    if cards == [] or cards == {}:
+        return cards
+    
+    processedCards = []
 
+    for card in cards:
+        processedCards.append(process_card_obj(card))
+
+    return processedCards
+
+
+#add s3 url
+def process_card_obj(card):
+
+    if card == {} or not hasattr(card, 'card_bucket') or not hasattr(card, 'card_s3_key'):
+        return card
+
+    card['url'] = s3.generate_presigned_url(
+        ClientMethod='get_object',
+        Params={
+            'Bucket': card['card_bucket'],
+            'Key': card['card_s3_key']
+        },
+        ExpiresIn=1800
+    )
+
+    delattr(card, 'card_bucket')
+    delattr(card, 'card_s3_key')
+
+    return card
 
 def unexpected_error(error):
     return {

@@ -53,8 +53,8 @@ def upload_to_rds(user_id, bucket, key, condition):
             condition_id = result.condition_id
 
         with rdsConn.cursor() as cursor:
-            sql = "INSERT INTO `cards` (`card_label`, `card_img_path`, `card_condition_id`, `user_id`, `time_created`) VALUES (%s, %s, %s, %s, %s)"
-            cursor.execute(sql, (label, "s3://" + bucket + "/" + key, str(condition_id), str(user_id), str(time_created)))
+            sql = "INSERT INTO `cards` (`card_label`, `card_bucket`, `card_s3_key`, `card_condition_id`, `user_id`, `time_created`) VALUES (%s, %s, %s, %s, %s)"
+            cursor.execute(sql, (label, bucket, key, str(condition_id), str(user_id), str(time_created)))
 
         rdsConn.commit()
 
