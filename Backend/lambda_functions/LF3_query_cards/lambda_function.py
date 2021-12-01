@@ -80,9 +80,6 @@ def lambda_handler(event, context):
                     #bad implementation: theoretically could have been deleted between this and first part (cut corners)
                     return real_response(cursor.fetchone())
 
-
-                return real_response(card)
-
         else:
             return raise_method_not_allowed()
 
