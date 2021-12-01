@@ -15,8 +15,8 @@ rdsConn = pymysql.connect(host='trading-cards.c49euq66g8jj.us-east-1.rds.amazona
 def lambda_handler(event, context):
     print(event)
     path =  event["path"]
-    user_id = event['headers']['x-amz-meta-user']
-    user_name = "STUB" #TODO get username from incognito
+    user_id = event['requestContext']['authorizer']['claims']['cognito:username']
+    user_name = user_id # refactor
     httpMethod = event['httpMethod']
 
     #TODO: price range, pagination, date range
@@ -88,7 +88,7 @@ def lambda_handler(event, context):
         else:
             return raise_method_not_allowed()
 
-    elif path.contains("/card/"):
+    elif "/card/" in path:
         if httpMethod == "GET":
 
             if not hasattr(event['pathParameters'], 'id'):
@@ -144,7 +144,7 @@ def lambda_handler(event, context):
         else:
             return raise_method_not_allowed()
 
-    elif path.contains("/search"):
+    elif "search" in path:
         if httpMethod == "GET":
             #TODO Search OpenSearch
             return dummy_response()
@@ -165,7 +165,7 @@ def lambda_handler(event, context):
         return real_response(user_obj)
 
     else:
-        return raise_method_not_allowed
+        return raise_method_not_allowed()
 
 
 
