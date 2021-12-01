@@ -42,7 +42,7 @@ def lambda_handler(event, context):
             return raise_method_not_allowed()
 
     else:
-        return raise_method_not_allowed
+        return raise_method_not_allowed()
 
 
 def raise_method_not_allowed():
