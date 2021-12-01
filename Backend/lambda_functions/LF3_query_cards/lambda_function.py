@@ -16,7 +16,6 @@ def lambda_handler(event, context):
     print(event)
     path =  event["path"]
     user_id = event['requestContext']['authorizer']['claims']['cognito:username']
-    user_name = user_id # refactor
     httpMethod = event['httpMethod']
 
     #TODO: price range, pagination, date range
@@ -26,12 +25,11 @@ def lambda_handler(event, context):
              with rdsConn:
                 with rdsConn.cursor() as cursor:
                     sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                    %s as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
+                    user_id as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
                     FROM `cards`
                     LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
-                    LEFT JOIN `users` ON `cards.`user_id` = `users`.`user_id`
                     WHERE `cards`.`user_id` = %s"""
-                    cursor.execute(sql, (user_name, str(user_id),))
+                    cursor.execute(sql, (str(user_id),))
                     cards = { "cards" : [] } if cursor.rowcount == 0 else { "cards": cursor.fetchall() }
                     return real_response(cards)
         else:
@@ -72,12 +70,12 @@ def lambda_handler(event, context):
                 with rdsConn.cursor() as cursor:
                     
                     sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                    %s as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
+                    user_id as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
                     FROM `cards`
                     LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
                     WHERE `cards`.`user_id` = %s
                         AND `cards`.`card_id` = %s"""
-                    cursor.execute(sql, (user_name, str(user_id), str(card_id),))
+                    cursor.execute(sql, (str(user_id), str(card_id),))
 
                     #bad implementation: theoretically could have been deleted between this and first part (cut corners)
                     return real_response(cursor.fetchone())
@@ -99,12 +97,12 @@ def lambda_handler(event, context):
             with rdsConn:
                 with rdsConn.cursor() as cursor:
                     sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                    %s as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
+                    user_id as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
                     FROM `cards`
                     LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
                     WHERE `cards`.`user_id` = %s
                         AND `cards`.`card_id` = %s"""
-                    cursor.execute(sql, (user_name, str(user_id), str(card_id),))
+                    cursor.execute(sql, (str(user_id), str(card_id),))
                     card = {} if cursor.rowcount == 0 else cursor.fetchone()
                     return real_response(card)
 
@@ -121,12 +119,12 @@ def lambda_handler(event, context):
 
                 with rdsConn.cursor() as cursor:
                     sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                    %s as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
+                    user_id as `owner_name`, `cards`.`card_id`, `card_img_path` as `url`, `card_value` as `value`
                     FROM `cards`
                     LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
                     WHERE `cards`.`user_id` = %s
                         AND `cards`.`card_id` = %s"""
-                    cursor.execute(sql, (user_name, str(user_id), str(card_id),))
+                    cursor.execute(sql, (str(user_id), str(card_id),))
                     if cursor.rowcount == 0:
                         return unexpected_error("card not found for user")
                     

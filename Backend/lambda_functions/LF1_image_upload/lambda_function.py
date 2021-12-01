@@ -21,7 +21,7 @@ def lambda_handler(event, context):
     condition = invoke_sagemaker(bucket, key)
 
     #TODO make sure condition is a float value
-    upload_to_rds(bucket, key, condition, user_id)
+    upload_to_rds(user_id, bucket, key, condition, user_id)
     upload_to_opensearch(bucket, key, condition)
 
 
@@ -35,12 +35,11 @@ def invoke_sagemaker(bucket, key):
     return ""
 
 
-def upload_to_rds(bucket, key, condition):
+def upload_to_rds(user_id, bucket, key, condition):
 
     s3_data = get_s3_metadata(key, bucket)
     label = s3_data['ResponseMetadata']['HTTPHeaders']['x-amz-meta-customlabels'] if 'x-amz-meta-customlabels' in s3_data['ResponseMetadata']['HTTPHeaders'] else ""
     time_created = s3_data['LastModified']
-    user_id = s3_data['ResponseMetadata']['HTTPHeaders']['x-amz-meta-user']
 
     condition_id = None
 
