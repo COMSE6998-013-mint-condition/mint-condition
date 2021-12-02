@@ -32,7 +32,7 @@ Resources:
       FunctionName: MINT_LF2_image_detection
       Handler: lambda_function.lambda_handler
       Runtime: python3.9
-      CodeUri: ./lambda_functions/LF2_image_detection
+      CodeUri: ./lambda_functions/LF2_ebay_cronjob
       Description: 'CCBD Project: Lambda function for trading card label prediction'
       MemorySize: 128
       Timeout: 15
