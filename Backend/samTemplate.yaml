@@ -3,6 +3,17 @@ Transform: 'AWS::Serverless-2016-10-31'
 Description: CD Lambda Deployment for Mint Condition Project
 
 Resources:
+  EbaySDKLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: ebaysdk
+      Description: "Ebay API SDK (Python)"
+      ContentUri: ./lambda_functions/dependencies/ebaysdk/
+      CompatibleRuntimes:
+        - python3.9
+        - python3.8
+    Metadata:
+      BuildMethod: python3.9
   ## Lambda to upload images
   MINTLF1:
     Type: 'AWS::Serverless::Function'
