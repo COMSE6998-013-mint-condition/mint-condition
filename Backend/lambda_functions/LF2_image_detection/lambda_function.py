@@ -1,7 +1,17 @@
 import json
 
+#deprecated - no need to implement
+#repurpose to historical price data checker
+#responds to cloudwatch trigger or cron
+#go through all card database and for each card do a query on ebay
+
+#todo notify via email user if price has changed with some threshold
+
 def lambda_handler(event, context):
-    # TODO implement
+    
+
+
+
      return {
         'statusCode': 200,
         'headers': {

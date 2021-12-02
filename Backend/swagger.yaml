@@ -9,31 +9,6 @@ basePath: /v1
 produces:
   - application/json
 paths:
-  /login:
-    post:
-      summary: login to the system
-      description: "Authorize user"
-      operationId: login
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: login confirmed
-          schema:
-            $ref: '#/definitions/LoginResponse'
-        '403':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/Error'
-        '405':
-          description: Method Not Defined
-          schema:
-            $ref: '#/definitions/Error'
-        '500':
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-          
   /upload:
     put:
       summary: trading card upload
@@ -53,10 +28,6 @@ paths:
           type: string
           required: true
         - name: x-amz-meta-customLabels
-          in: header
-          type: string
-          required: true
-        - name: x-amz-meta-user
           in: header
           type: string
           required: true
@@ -88,10 +59,6 @@ paths:
           type: integer
           required: true
           description: Numeric ID of the card to get
-        - name: x-amz-meta-user
-          in: header
-          type: string
-          required: true
       produces:
         - application/json
       responses:
@@ -120,10 +87,6 @@ paths:
           type: integer
           required: true
           description: Numeric ID of the card to delete
-        - name: x-amz-meta-user
-          in: header
-          type: string
-          required: true
       produces:
         - application/json
       responses:
@@ -143,8 +106,6 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
-
-  /card:
     post:
       summary: update card information
       description: update information regarding the specified card
@@ -155,10 +116,6 @@ paths:
           description: updated card metadata
           schema:
             $ref: '#/definitions/CardUpdate'
-        - name: x-amz-meta-user
-          in: header
-          type: string
-          required: true
       produces:
         - application/json
       responses:
@@ -185,11 +142,6 @@ paths:
       description: get all the user's cards
       produces:
         - application/json
-      parameters:
-        - name: x-amz-meta-user
-          in: header
-          type: string
-          required: true
       responses:
         '200':
           description: All card metadata
@@ -237,67 +189,6 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
-    delete:
-      summary: delete user 
-      description: delete specified user
-      parameters:
-        - in: path
-          name: id
-          type: integer
-          required: true
-          description: Numeric ID of the user to delete
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: Deleted user
-          schema:
-            $ref: '#/definitions/User'
-        '403':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/Error'
-        '405':
-          description: Method Not Defined
-          schema:
-            $ref: '#/definitions/Error'
-        '500':
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-
-
-  /user:
-    post:
-      summary: update user information
-      description: update information regarding the user
-      parameters:
-        - in: body
-          name: body
-          required: true
-          description: updated user metadata
-          schema:
-            $ref: '#/definitions/UserUpdate'
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: Updated user
-          schema:
-            $ref: '#/definitions/User'
-        '403':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/Error'
-        '405':
-          description: Method Not Defined
-          schema:
-            $ref: '#/definitions/Error'
-        '500':
-          description: Unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-  
   
   /search:
     get:
@@ -313,10 +204,6 @@ paths:
           name: condition
           type: string
           description: the condition string to be searched
-        - name: x-amz-meta-user
-          in: header
-          type: string
-          required: true
       produces:
         - application/json
       responses:
@@ -350,6 +237,8 @@ definitions:
         format: int32
       url:
         type: string
+      value:
+        type: string
       label: 
         type: string
       condition_label:
@@ -370,9 +259,6 @@ definitions:
   CardUpdate:
     type: object
     properties:
-      card_id:
-        type: integer
-        format: int32
       labels:
         type: array
         items:
@@ -382,24 +268,8 @@ definitions:
     type: object
     properties:
       user_id:
-        type: integer
-        format: int32
-      name:
         type: string
       email:
-        type: string
-        
-  UserUpdate:
-    type: object
-    properties:
-      user_id:
-        type: integer
-        format: int32
-      name:
-        type: string
-      email:
-        type: string
-      password:
         type: string
   
   Error:
