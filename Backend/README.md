@@ -5,4 +5,4 @@ Team Members:
 - Adam
 - Bharathi
 - Taku
-- Twisha
+- Gursifath
