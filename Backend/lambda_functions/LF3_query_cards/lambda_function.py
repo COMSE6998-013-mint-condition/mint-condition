@@ -142,9 +142,10 @@ def lambda_handler(event, context):
                     return unexpected_error("deletion failed")
 
 
-                #TODO delete from opensearch too
+            #TODO delete from opensearch too
 
-                return real_response(card)
+            return real_response(card)
+
         else:
             return raise_method_not_allowed()
 
