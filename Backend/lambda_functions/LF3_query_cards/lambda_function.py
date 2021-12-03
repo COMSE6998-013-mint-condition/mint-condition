@@ -1,6 +1,7 @@
 import json
 import pymysql
 import boto3
+import urllib3
 
 s3=boto3.client('s3')
 
@@ -8,12 +9,21 @@ s3=boto3.client('s3')
 Refer to https://stackoverflow.com/questions/49715482/how-to-access-the-url-that-invoked-my-lambda-function for event schema
 '''
 
-rdsConn = pymysql.connect(host='trading-cards.c49euq66g8jj.us-east-1.rds.amazonaws.com',
+region = 'us-east-1'
+
+rdsConn = pymysql.connect(host=f'trading-cards.c49euq66g8jj.{region}.rds.amazonaws.com',
                              user='admin',
                              password='c3iTGk4gKXp4JRH',
                              database='mint_condition',
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)
+
+os_host = os.environ['os_url']
+os_username = os.environ['os_username']
+os_pw = os.environ["os.pw"]
+os_index = 'cards/_doc'
+os_url = os_host + os_index
+
 
 def lambda_handler(event, context):
     print(event)
@@ -21,7 +31,6 @@ def lambda_handler(event, context):
     user_id = event['requestContext']['authorizer']['claims']['cognito:username']
     httpMethod = event['httpMethod']
 
-    #TODO: price range, pagination, date range
     if path == "/cards":
         if httpMethod == "GET":
             
@@ -149,12 +158,29 @@ def lambda_handler(event, context):
         else:
             return raise_method_not_allowed()
 
+    #TODO: price range, pagination, date range
+    #TODO: available query params for now: condition, label
     elif "search" in path:
+        results = []
         if httpMethod == "GET":
-            #TODO Search OpenSearch
-            return dummy_response()
+            os_payload = {
+                "size": 10000,
+                "query": {
+                    "match": {
+                    }
+                }
+            }
+            if "label" in event["queryStringParameters"]:
+                os_payload["query"]["match"]["labels"] = event["queryStringParameters"]["label"]
+            if "condition" in event["queryStringParameters"]:
+                os_payload["query"]["match"]["condition"] = event["queryStringParameters"]["condition"]
+            if not os_payload["query"]["match"]:
+                return real_response(results)
+            results = search_opensearch(os_payload)
         else:
             return raise_method_not_allowed()
+
+        return real_response(results)
 
     elif path.contains("/user/"):
         if not hasattr(event['pathParameters'], 'id'):
@@ -205,11 +231,27 @@ def process_card_obj(card):
 
     return card
 
+
+def search_opensearch(os_payload):
+    http = urllib3.PoolManager()
+    headers = urllib3.make_headers(basic_auth=f"{os_username}:{os_pw}")
+    headers['Content-Type'] = 'application/json'
+    response = http.request('POST',
+                    os_url + "/_search",
+                    body = json.dumps(os_payload),
+                    headers = headers,
+                    retries = False)
+    x = json.loads(response.data)
+    
+    return [obj['_source'] for obj in x['hits']['hits'] if '_source' in obj.keys()]
+
+
 def unexpected_error(error):
     return {
         'statusCode': 500,
         'body': error
     }    
+
 
 def raise_method_not_allowed():
     return {
@@ -228,6 +270,7 @@ def dummy_response():
         },
         'body': "Hi there"
     }
+
 
 #assume dict result format
 def real_response(result):
