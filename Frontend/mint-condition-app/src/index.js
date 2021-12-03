@@ -1,16 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import Login from './components/Login'
-import App from './App';
+import Login from './Login'
+import User from './User';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
+import Card from './Card'
+import HomePage from './HomePage'
+import App from './App'
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <Login />
-    </BrowserRouter>
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 );

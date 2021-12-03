@@ -3,16 +3,16 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import { useNavigate } from "react-router-dom";
 import { Container, makeStyles, Typography } from '@material-ui/core';
-import logo from '../logo.jpeg'
+import logo from './logo.jpeg'
+// import { CognitoUser, AuthenticationDetails } from 'amazon-cognito-identify-js';
+import UserPool from './UserPool'
 
 function Login(){
   const [ itemData, setItemData ] = useState([]);
   const [ loading, setLoading ] = useState(false);
-  const history = useNavigate();
-  const routeChange = () =>{ 
-    let path = 'https://mintcondition2.auth.us-east-1.amazoncognito.com/signup?response_type=code&client_id=55gonmd5[…]ntcondition2.auth.us-east-1.amazoncognito.com'; 
-    window.location.href = path; 
-    console.log("nice");
+  const onSubmit = () =>{ 
+    // event.preventDefault();
+    // const user
   }
 
   return (
@@ -33,7 +33,7 @@ function Login(){
           <Grid> 
           </Grid>
           <Grid item xs={13}>
-            <Button variant="contained" onClick={routeChange} style={{height:80, width: 400, fontSize: 40, backgroundColor: "#FFFDD0"}}>Login / Sign Up</Button>
+            <Button variant="contained" onClick={onSubmit} style={{height:80, width: 400, fontSize: 40, backgroundColor: "#FFFDD0"}}>Login / Sign Up</Button>
           </Grid>
         </Grid>
       </Container>
