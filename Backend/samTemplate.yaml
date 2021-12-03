@@ -28,6 +28,7 @@ Resources:
       Timeout: 15
       Layers: 
         - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-PyMySQL:4
+        - !Ref EbaySDKLayer
   ## Lambda to query sagemaker
   MINTLF2:
     Type: 'AWS::Serverless::Function'
