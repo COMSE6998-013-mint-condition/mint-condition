@@ -140,21 +140,15 @@ def lambda_handler(event, context):
                     
                     card = process_card_obj(cursor.fetchone())
 
-                try:
-                    with rdsConn.cursor() as cursor:
-                        sql = "DELETE FROM `cards` WHERE `card_id` = %s"
-                        cursor.execute(sql, (str(card_id),))
+                with rdsConn.cursor() as cursor:
+                    sql = "DELETE FROM `cards` WHERE `card_id` = %s"
+                    cursor.execute(sql, (str(card_id),))
 
-                    rdsConn.commit()
-                    
-                except:
-                    return unexpected_error("deletion failed")
+                rdsConn.commit()
 
+                #TODO delete from opensearch too
 
-            #TODO delete from opensearch too
-
-            return real_response(card)
-
+                return real_response(card)
         else:
             return raise_method_not_allowed()
 
