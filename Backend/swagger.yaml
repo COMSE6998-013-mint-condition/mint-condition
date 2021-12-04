@@ -259,8 +259,10 @@ definitions:
   CardUpdate:
     type: object
     properties:
-      label:        
-        type: string
+      labels:
+        type: array
+        items:
+          type: string
           
   User:
     type: object
