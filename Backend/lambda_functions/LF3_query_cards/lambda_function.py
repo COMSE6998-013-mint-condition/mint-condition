@@ -362,18 +362,6 @@ def raise_method_not_allowed():
     }
 
 
-def dummy_response():
-    return {
-        'statusCode': 200,
-        'headers': {
-            'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Accept,x-amz-meta-customLabels',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,PUT,GET'
-        },
-        'body': "Hi there"
-    }
-
-
 #assume dict result format
 def real_response(result):
     return {
@@ -381,7 +369,7 @@ def real_response(result):
         'headers': {
             'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Accept,x-amz-meta-customLabels',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,PUT,GET'
+            'Access-Control-Allow-Methods': 'OPTIONS,PUT,GET,POST,DELETE'
         },
         'body': json.dumps(result)
     }
