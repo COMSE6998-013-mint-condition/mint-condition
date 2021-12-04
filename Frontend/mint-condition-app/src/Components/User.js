@@ -1,6 +1,6 @@
 import Grid from '@material-ui/core/Grid';
 import { Container} from '@material-ui/core';
-import CardList from './Components/CardList'
+import CardList from './CardList'
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -8,7 +8,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import Header from './Components/Header'
+import Header from './Header'
+import { check_auth_code } from '../utils/auth_helpers';
 // import {useNavigate} from "react-router-dom"
 
 function createData(name, num_cards, purpose, num_sold, pwd, total_val) {
@@ -20,6 +21,7 @@ const rows = [
 ];
 
 function User(){
+  check_auth_code();
   // const userName = "ihunchan1024@gmail.com";
   // const navigate = useNavigate()
   return (

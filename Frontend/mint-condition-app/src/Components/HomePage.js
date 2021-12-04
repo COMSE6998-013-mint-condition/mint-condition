@@ -2,8 +2,9 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Container, makeStyles } from '@material-ui/core';
 import {DropzoneArea} from 'material-ui-dropzone'
-import Header from './Components/Header'
-import CardList from './Components/CardList'
+import Header from './Header'
+import CardList from './CardList'
+import { check_auth_code } from '../utils/auth_helpers';
 
 const useStyles = makeStyles({
   smDropzone: {
@@ -12,7 +13,9 @@ const useStyles = makeStyles({
   },
 });
 
-function HomePage(){
+function HomePage(props){
+  check_auth_code();
+
   //change userName to user's username
   // const userName = "ihunchan1024@gmail.com";
   const classes = useStyles();

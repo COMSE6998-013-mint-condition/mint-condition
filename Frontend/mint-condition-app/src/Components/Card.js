@@ -1,7 +1,7 @@
 import Grid from '@material-ui/core/Grid';
 import { Container } from '@material-ui/core';
-import Header from '../Components/Header'
-import CardList from '../Components/CardList'
+import Header from './Header'
+import CardList from './CardList'
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -9,6 +9,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { check_auth_code } from '../utils/auth_helpers';
+
 
 function createData(name, related_cards, quality, requests, value, availability) {
   return { name, related_cards, quality, requests, value, availability };
@@ -19,6 +21,7 @@ const rows = [
 ];
 
 function Card(){
+  check_auth_code();
   return (
       <Container maxWidth='md' style={{marginTop : 22}}>
         <Header/>
