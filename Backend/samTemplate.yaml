@@ -31,6 +31,11 @@ Resources:
           os_pw : '{{resolve:secretsmanager:mint-condition-os-secrets:SecretString:os_pw}}'
           os_url : '{{resolve:secretsmanager:mint-condition-os-secrets:SecretString:os_url}}'
           os_username: '{{resolve:secretsmanager:mint-condition-os-secrets:SecretString:os_username}}'
+          DB_HOST : '{{resolve:secretsmanager:mint-condition-rds-secrets:SecretString:DB_HOST}}'
+          DB_USER : '{{resolve:secretsmanager:mint-condition-rds-secrets:SecretString:DB_USER}}'
+          DB_PASSWORD: '{{resolve:secretsmanager:mint-condition-rds-secrets:SecretString:DB_PASSWORD}}'
+          DB_PORT: '{{resolve:secretsmanager:mint-condition-rds-secrets:SecretString:DB_PORT}}'
+          DB_DATABASE: '{{resolve:secretsmanager:mint-condition-rds-secrets:SecretString:DB_DATABASE}}'
           EBAY_PROD_CLIENT_ID: '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_PROD_CLIENT_ID}}'
       Layers: 
         - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-PyMySQL:4
