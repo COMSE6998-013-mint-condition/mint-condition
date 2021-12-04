@@ -45,9 +45,8 @@ Resources:
             SecretArn: !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:*'
         - S3ReadPolicy:
             BucketName: mint-trading-cards
-        - ElasticsearchHttpPostPolicy:
-            DomainName: mint-condition
-
+        - AmazonSageMakerPipelinesIntegrations: {}
+        
   ## Lambda to query sagemaker
   MINTLF2:
     Type: 'AWS::Serverless::Function'
