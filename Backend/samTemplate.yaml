@@ -70,7 +70,7 @@ Resources:
       Environment:
         Variables:
           EBAY_ENDPOINT: '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_ENDPOINT}}'
-          EBAY_PROD_CLIENT_ID:	'{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_PROD_CLIENT_ID}}'
+          EBAY_PROD_CLIENT_ID: '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_PROD_CLIENT_ID}}'
           EBAY_PROD_CLIENT_SECRET: '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_PROD_CLIENT_SECRET}}'
           EBAY_PROD_DEV_ID: '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_PROD_DEV_ID}}'
           EBAY_SANDBOX_CLIENT_ID: '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_SANDBOX_CLIENT_ID}}'
