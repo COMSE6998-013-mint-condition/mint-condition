@@ -12,13 +12,6 @@ Refer to https://stackoverflow.com/questions/49715482/how-to-access-the-url-that
 
 region = 'us-east-1'
 
-rdsConn = pymysql.connect(host=os.environ['DB_HOST'],
-                            user=os.environ['DB_USER'],
-                            password=os.environ['DB_PASSWORD'],
-                            database=os.environ['DB_DATABASE'],
-                            charset='utf8mb4',
-                            cursorclass=pymysql.cursors.DictCursor)
-
 os_host = os.environ['os_url']
 os_username = os.environ['os_username']
 os_pw = os.environ["os.pw"]
@@ -27,6 +20,15 @@ os_url = os_host + os_index
 
 
 def lambda_handler(event, context):
+
+    rdsConn = pymysql.connect(host=f'trading-cards.c49euq66g8jj.{region}.rds.amazonaws.com',
+                             user='admin',
+                             password='c3iTGk4gKXp4JRH',
+                             database='mint_condition',
+                             charset='utf8mb4',
+                             cursorclass=pymysql.cursors.DictCursor,
+                             autocommit=True)
+
     path =  event["path"]
     user_id = event['requestContext']['authorizer']['claims']['cognito:username']
     httpMethod = event['httpMethod']
@@ -74,8 +76,6 @@ def lambda_handler(event, context):
 
                     sql = "UPDATE `cards` SET `card_label` = %s WHERE `card_id` = %s"
                     cursor.execute(sql, (labels, str(card_id),))
-
-                rdsConn.commit()
 
                 #TODO update opensearch too
 
@@ -144,8 +144,6 @@ def lambda_handler(event, context):
                     with rdsConn.cursor() as cursor:
                         sql = "DELETE FROM `cards` WHERE `card_id` = %s"
                         cursor.execute(sql, (str(card_id),))
-
-                    rdsConn.commit()
                     
                 except:
                     return unexpected_error("deletion failed")
