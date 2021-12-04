@@ -77,6 +77,12 @@ Resources:
       Policies:
         - AWSSecretsManagerGetSecretValuePolicy:
             SecretArn: !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:*'
+      Events:
+        EbayPricingTrigger:
+          Type: Schedule
+          Properties:
+            State: DISABLED
+            Schedule: cron(0,0 6 * * ? *) # CRON: 6 am UTC everyday 
   ## Lambda to query/update card
   MINTLF3:
     Type: 'AWS::Serverless::Function'
