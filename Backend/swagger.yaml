@@ -110,6 +110,8 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
+
+  /card:
     post:
       summary: update card information
       description: update information regarding the specified card
@@ -233,9 +235,7 @@ definitions:
       card_id:
         type: integer
         format: int32
-      url:
-        type: string
-      value:
+      path:
         type: string
       label: 
         type: string
@@ -245,7 +245,11 @@ definitions:
         type: string
       owner_name:
         type: string
-        
+      price_object:
+        type: object
+        properties:
+          $ref: "#/definitions/PriceObject"
+
   Cards:
     type: object
     properties:
@@ -259,6 +263,37 @@ definitions:
     properties:
       label:        
         type: string
+      id:
+        type: integer
+
+  PriceObject:
+    type: object
+    properties:
+      max_value:
+        type: float
+      min_value:
+        type: flaot
+      count:
+        type: integer
+        format: int32
+      mean_value: 
+        type: float
+
+  PriceObject:
+    type: object
+    properties:
+      cards:
+        type: array
+        items:
+          $ref: "#/definitions/PriceObject"
+        
+  Cards:
+    type: object
+    properties:
+      cards:
+        type: array
+        items:
+          $ref: "#/definitions/Card"
           
   User:
     type: object
