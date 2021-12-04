@@ -6,8 +6,8 @@ import pymysql
 import os
 import time
 
-from ebaysdk.finding import Connection
-from ebaysdk.exception import ConnectionError
+# from ebaysdk.finding import Connection
+# from ebaysdk.exception import ConnectionError
 import datetime
 import math
 
@@ -21,10 +21,10 @@ os_pw = os.environ["os_pw"]
 os_index = 'cards'
 os_url = os_host + os_index
 
-client = Connection(
-    domain='svcs.ebay.com', # SANDBOX: svcs.sandbox.ebay.com
-    appid=os.environ['EBAY_PROD_CLIENT_ID'], 
-    config_file=None)
+# client = Connection(
+#     domain='svcs.ebay.com', # SANDBOX: svcs.sandbox.ebay.com
+#     appid=os.environ['EBAY_PROD_CLIENT_ID'], 
+#     config_file=None)
 
 
 def lambda_handler(event, context):
@@ -48,8 +48,8 @@ def lambda_handler(event, context):
     card_id = rds_insert(rdsConn, user_id, label, time_created, bucket, key)
 
     # ebay API
-    ebay_data = search_ebay(card_id=card_id, keywords=label) # returns dict of pricing data
-    rds_insert_ebay(rdsConn, ebay_data)
+    # ebay_data = search_ebay(card_id=card_id, keywords=label) # returns dict of pricing data
+    # rds_insert_ebay(rdsConn, ebay_data)
 
     #TODO make sure condition is a float value
     condition = invoke_sagemaker(bucket, key) 
