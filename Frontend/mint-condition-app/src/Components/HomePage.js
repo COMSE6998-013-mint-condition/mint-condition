@@ -15,9 +15,6 @@ const useStyles = makeStyles({
 
 function HomePage(props){
   check_auth_code();
-
-  //change userName to user's username
-  // const userName = "ihunchan1024@gmail.com";
   const classes = useStyles();
   return (
       <Container maxWidth='md' style={{marginTop : 22}} >

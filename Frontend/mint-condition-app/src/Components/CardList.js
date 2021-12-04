@@ -11,13 +11,11 @@ const useStyles = makeStyles({
 });
 
 function CardList(){
-  //change userName to user's username
-  // const userName = "ihunchan1024@gmail.com";
   const classes = useStyles();
   return (
       <Container maxWidth='md' style={{marginTop : 22}} >
-        <Typography variant="h4" style={{position: 'absolute',left: 100, bottom: 430,}}>Uploaded Cards</Typography>
-        <Grid style={{position: 'absolute', left: 100, bottom: 120,}}>
+        <Typography variant="h4" style={{position: 'absolute',left: 100, bottom: 550,}}>Uploaded Cards</Typography>
+        <Grid style={{position: 'absolute', left: 100, bottom: 220,}}>
           <DropzoneArea classes={{root: classes.smDropzone}} dropzoneText={"Upload a Card"}/>
         </Grid>
       </Container>
