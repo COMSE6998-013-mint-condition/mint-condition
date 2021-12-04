@@ -6,6 +6,7 @@ import pymysql
 import os
 import time
 
+
 region = 'us-east-1'
 s3=boto3.client('s3')
 
@@ -38,10 +39,10 @@ def lambda_handler(event, context):
     #TODO make sure condition is a float value
     condition = invoke_sagemaker(bucket, key) 
 
-    rds_update_condition(rdsConn, card_id, condition)
+    condition_name = rds_update_condition(rdsConn, card_id, condition)
 
     split_labels = label.strip().split(",")
-    upload_to_opensearch(card_id=card_id, user_id=user_id, created_timestmap=time_created, labels=split_labels)
+    upload_to_opensearch(card_id=card_id, user_id=user_id, created_timestmap=time_created, labels=split_labels, condition=condition_name)
     
     rdsConn.close()
     
@@ -50,14 +51,13 @@ def lambda_handler(event, context):
 
 # TODO
 def invoke_sagemaker(bucket, key):
-    return float(2.0)
+    return 2.0
 
 
 def rds_insert(conn, user_id, label, time_created, bucket, key):
     with conn.cursor() as cursor:
         sql = "INSERT INTO `cards` (`card_label`, `card_bucket`, `card_s3_key`, `user_id`, `time_created`) VALUES (%s, %s, %s, %s, %s)"
         cursor.execute(sql, (label, bucket, key, str(user_id), time.mktime(time.strptime(time_created, "%Y-%m-%dT%H:%M:%S.%fZ"))))
-
     return conn.insert_id()
 
 
@@ -75,6 +75,16 @@ def rds_update_condition(conn, card_id, condition):
     with conn.cursor() as cursor:
         sql = "UPDATE `cards` SET `card_condition_id` = %s WHERE `card_id` = %s"
         cursor.execute(sql, (condition_id, card_id))
+
+
+    card_condition_name = ""
+    with conn.cursor() as cursor:
+        sql = "SELECT `card_condition_name` FROM `card_conditions` WHERE `card_ccondition_id` = %s"
+        cursor.execute(sql, (condition_id,))
+        result = cursor.fetchone()
+        condition_id = result['card_condition_name']
+        
+    return card_condition_name
 
 
 def upload_to_opensearch(**kwargs):
