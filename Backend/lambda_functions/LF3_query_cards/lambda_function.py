@@ -2,6 +2,7 @@ import json
 import pymysql
 import boto3
 import urllib3
+import os
 
 s3=boto3.client('s3')
 
@@ -26,7 +27,6 @@ os_url = os_host + os_index
 
 
 def lambda_handler(event, context):
-    print(event)
     path =  event["path"]
     user_id = event['requestContext']['authorizer']['claims']['cognito:username']
     httpMethod = event['httpMethod']
@@ -182,6 +182,8 @@ def lambda_handler(event, context):
 
         return real_response(results)
 
+        # TODO check database for bucket, key, and return a signed url with the image
+
     elif path.contains("/user/"):
         if not hasattr(event['pathParameters'], 'id'):
                 return unexpected_error("id not provided")
@@ -236,7 +238,7 @@ def search_opensearch(os_payload):
     http = urllib3.PoolManager()
     headers = urllib3.make_headers(basic_auth=f"{os_username}:{os_pw}")
     headers['Content-Type'] = 'application/json'
-    response = http.request('POST',
+    response = http.request('GET',
                     os_url + "/_search",
                     body = json.dumps(os_payload),
                     headers = headers,
