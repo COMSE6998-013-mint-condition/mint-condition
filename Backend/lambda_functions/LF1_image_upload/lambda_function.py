@@ -42,8 +42,8 @@ def lambda_handler(event, context):
     s3_data = get_s3_metadata(key, bucket)
     label = s3_data['ResponseMetadata']['HTTPHeaders']['x-amz-meta-customlabels'] if 'x-amz-meta-customlabels' in s3_data['ResponseMetadata']['HTTPHeaders'] else ""
     time_created = s3_data['LastModified'].strftime("%Y-%m-%dT%H:%M:%S.%fZ") #convert to a time.struct_time object -> will store as a unix timestamp
-    # user_id = s3_data['ResponseMetadata']['HTTPHeaders']['x-amz-meta-user']
-    user_id = "google_101390119411965147253"
+    user_id = s3_data['ResponseMetadata']['HTTPHeaders']['x-amz-meta-user']
+    # user_id = "google_101390119411965147253"
     
     card_id = rds_insert(rdsConn, user_id, label, time_created, bucket, key)
 

@@ -31,6 +31,10 @@ paths:
           in: header
           type: string
           required: true
+        - name: x-amz-meta-user
+          in: header
+          type: string
+          required: true
       responses:
         '200':
           description: S3 PUT operation response
@@ -160,16 +164,10 @@ paths:
           schema:
             $ref: '#/definitions/Error'
             
-  /user/{id}:
+  /user/:
     get:
       summary: get user information
       description: get information regarding the user
-      parameters:
-        - in: path
-          name: id
-          type: integer
-          required: true
-          description: Numeric ID of the user to get
       produces:
         - application/json
       responses:
