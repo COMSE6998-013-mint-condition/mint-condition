@@ -79,10 +79,10 @@ def rds_update_condition(conn, card_id, condition):
 
     card_condition_name = ""
     with conn.cursor() as cursor:
-        sql = "SELECT `card_condition_name` FROM `card_conditions` WHERE `card_ccondition_id` = %s"
+        sql = "SELECT `card_condition_name` FROM `card_conditions` WHERE `card_condition_id` = %s"
         cursor.execute(sql, (condition_id,))
         result = cursor.fetchone()
-        condition_id = result['card_condition_name']
+        card_condition_name = result['card_condition_name']
         
     return card_condition_name
 
