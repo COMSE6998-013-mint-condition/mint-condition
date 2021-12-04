@@ -158,7 +158,7 @@ def lambda_handler(event, context):
                 'Access-Control-Allow-Methods': 'OPTIONS,PUT,GET'
             },
         }
-
+        
     except Exception as e:
         print("Error extracting Ebay Catalog data:", e)
         return {

@@ -2,7 +2,7 @@ import json
 import pymysql
 import boto3
 import urllib3
-
+import os
 s3=boto3.client('s3')
 
 '''
