@@ -21,13 +21,13 @@ os_url = os_host + os_index
 
 def lambda_handler(event, context):
 
-    rdsConn = pymysql.connect(host=f'trading-cards.c49euq66g8jj.{region}.rds.amazonaws.com',
-                             user='admin',
-                             password='c3iTGk4gKXp4JRH',
-                             database='mint_condition',
-                             charset='utf8mb4',
-                             cursorclass=pymysql.cursors.DictCursor,
-                             autocommit=True)
+    rdsConn = pymysql.connect(host=os.environ['DB_HOST'],
+                              user=os.environ['DB_USER'],
+                              password=os.environ['DB_PASSWORD'],
+                              database=os.environ['DB_DATABASE'],
+                              charset='utf8mb4',
+                              cursorclass=pymysql.cursors.DictCursor,
+                              autocommit=True)
 
     path =  event["path"]
     user_id = event['requestContext']['authorizer']['claims']['cognito:username']
