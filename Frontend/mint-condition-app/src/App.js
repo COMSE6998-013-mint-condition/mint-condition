@@ -1,8 +1,8 @@
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom"
-import Login from './Login'
-import Card from './Card'
-import User from './User'
-import HomePage from './HomePage'
+import Login from './Pages/Login'
+import Card from './Pages/Card'
+import User from './Pages/User'
+import HomePage from './Pages/HomePage'
 
 function App() {
   return (

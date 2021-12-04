@@ -3,7 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 // import { useNavigate } from "react-router-dom";
 import { Container, Typography } from '@material-ui/core';
-import logo from './logo.jpeg'
+import logo from '../assets/logo.jpeg'
 // import { CognitoUser, AuthenticationDetails } from 'amazon-cognito-identify-js';
 // import UserPool from './UserPool'
 

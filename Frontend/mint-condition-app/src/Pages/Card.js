@@ -1,7 +1,7 @@
 import Grid from '@material-ui/core/Grid';
 import { Container } from '@material-ui/core';
-import Header from './Components/Header'
-import CardList from './Components/CardList'
+import Header from '../Components/Header'
+import CardList from '../Components/CardList'
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
