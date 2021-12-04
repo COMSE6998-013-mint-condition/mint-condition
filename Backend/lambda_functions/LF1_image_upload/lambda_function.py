@@ -82,7 +82,7 @@ def rds_update_condition(conn, card_id, condition):
 
     #TODO implement failure handling - what if nothing is retrieved
     with conn.cursor() as cursor:
-        sql = "SELECT `card_condition_id, card_condition_name` FROM `card_conditions` WHERE `card_condition_rating` = %s"
+        sql = "SELECT `card_condition_id`, `card_condition_name` FROM `card_conditions` WHERE `card_condition_rating` = %s"
         cursor.execute(sql, (condition,))
         result = cursor.fetchone()
         condition_id = result['card_condition_id']
