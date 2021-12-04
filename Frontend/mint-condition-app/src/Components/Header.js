@@ -15,7 +15,7 @@ function Header(){
         <Grid container spacing={2} justifyContent='left' alignItems='left' >
             <Grid item xs={12}>
                 <Typography variant="h3" style={{position: 'absolute',left: 50, top: 70,}}>Mint Condition</Typography>
-                <img src={pikachu} style={{height:120, width: 120, position: 'absolute', left: 365}}/>
+                <img src={pikachu} alt='pikachu' style={{height:120, width: 120, position: 'absolute', left: 365}}/>
                 <Link to="/User" style={{position: 'absolute',right: 70, top: 50, fontSize:30}}>{userName}</Link>
             </Grid>
         </Grid>

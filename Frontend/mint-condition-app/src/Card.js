@@ -1,9 +1,7 @@
-import React, { useState, Component } from 'react';
 import Grid from '@material-ui/core/Grid';
-import { Container, makeStyles, Typography } from '@material-ui/core';
+import { Container } from '@material-ui/core';
 import Header from './Components/Header'
 import CardList from './Components/CardList'
-import logo from './pikachu.png'
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -24,9 +22,6 @@ function Card(){
   return (
       <Container maxWidth='md' style={{marginTop : 22}}>
         <Header/>
-        <Grid style={{position: 'absolute', left: 100, bottom: 550,}}>
-          <img src={logo} style={{height:800, width: 700}}></img>
-        </Grid>
         <CardList/>
         <Grid style={{position: 'absolute', left: 1200, bottom: 550,}}>
           <TableContainer component={Paper}>

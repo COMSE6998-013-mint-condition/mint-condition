@@ -14,7 +14,7 @@ const useStyles = makeStyles({
 
 function HomePage(){
   //change userName to user's username
-  const userName = "ihunchan1024@gmail.com";
+  // const userName = "ihunchan1024@gmail.com";
   const classes = useStyles();
   return (
       <Container maxWidth='md' style={{marginTop : 22}} >
