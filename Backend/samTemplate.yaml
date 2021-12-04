@@ -68,33 +68,17 @@ Resources:
       MemorySize: 128
       Timeout: 15
       Environment:
-      Variables:
-        EBAY_ENDPOINT : '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_ENDPOINT}}'
-        EBAY_PROD_CLIENT_ID :	'{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_PROD_CLIENT_ID}}'
-        EBAY_PROD_CLIENT_SECRET	: '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_PROD_CLIENT_SECRET}}'
-        EBAY_PROD_DEV_ID	: '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_PROD_DEV_ID}}'
-        EBAY_SANDBOX_CLIENT_ID	: '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_SANDBOX_CLIENT_ID}}'
-        EBAY_SANDBOX_CLIENT_SECRET	: '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_SANDBOX_CLIENT_SECRET}}'
-        EBAY_SANDBOX_DEV_ID	: '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_SANDBOX_DEV_ID}}'
-        EBAY_VERIFICATION_TOKEN : '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_VERIFICATION_TOKEN}}'
+        Variables:
+          EBAY_ENDPOINT: '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_ENDPOINT}}'
+          EBAY_PROD_CLIENT_ID: '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_PROD_CLIENT_ID}}'
+          EBAY_PROD_CLIENT_SECRET: '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_PROD_CLIENT_SECRET}}'
+          EBAY_PROD_DEV_ID: '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_PROD_DEV_ID}}'
+          EBAY_SANDBOX_CLIENT_ID: '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_SANDBOX_CLIENT_ID}}'
+          EBAY_SANDBOX_CLIENT_SECRET: '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_SANDBOX_CLIENT_SECRET}}'
+          EBAY_SANDBOX_DEV_ID: '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_SANDBOX_DEV_ID}}'
+          EBAY_VERIFICATION_TOKEN: '{{resolve:secretsmanager:ebay-prod-secrets:SecretString:EBAY_VERIFICATION_TOKEN}}'
       Layers:
          - arn:aws:lambda:us-east-1:958611120422:layer:event-notification-nodejs-sdk:1
       Policies:
-      - CloudWatchPutMetricPolicy: {
-        "Statement": [
-          {
-            "Effect": "Allow",
-            "Action": [
-              "secretsmanager:GetSecretValue"
-            ],
-            "Resource": {
-              "Fn::Sub": [
-                "${secretArn}",
-                {
-                  "secretArn": "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:ebay-prod-secrets-0LmKNp"
-                }
-              ]
-            }
-          }
-        ]
-      }
+      - CloudWatchPutMetricPolicy: 
+        secretArn : !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:ebay-prod-secrets-0LmKNp"
