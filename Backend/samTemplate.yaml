@@ -36,7 +36,7 @@ Resources:
         - !Ref EbaySDKLayer
       Policies:
         - AWSSecretsManagerGetSecretValuePolicy:
-          SecretArn : !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:ebay-prod-secrets-0LmKNp
+          SecretArn : arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:ebay-prod-secrets-0LmKNp
         - S3ReadPolicy:
           BucketName: mint-trading-cards
 
@@ -92,4 +92,4 @@ Resources:
          - arn:aws:lambda:us-east-1:958611120422:layer:event-notification-nodejs-sdk:1
       Policies:
         - AWSSecretsManagerGetSecretValuePolicy: 
-          SecretArn : !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:ebay-prod-secrets-0LmKNp
+          SecretArn: arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:ebay-prod-secrets-0LmKNp
