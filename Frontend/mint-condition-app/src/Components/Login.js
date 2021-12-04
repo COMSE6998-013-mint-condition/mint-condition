@@ -1,18 +1,22 @@
-import React, { useState, Component } from 'react';
+// import React, { useState, Component } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import { useNavigate } from "react-router-dom";
-import { Container, makeStyles, Typography } from '@material-ui/core';
-import logo from './logo.jpeg'
+// import { useNavigate } from "react-router-dom";
+import { Container, Typography } from '@material-ui/core';
+import logo from '../assets/logo.jpeg'
 // import { CognitoUser, AuthenticationDetails } from 'amazon-cognito-identify-js';
-import UserPool from './UserPool'
+// import UserPool from './UserPool'
 
 function Login(){
-  const [ itemData, setItemData ] = useState([]);
-  const [ loading, setLoading ] = useState(false);
+  // const [ itemData, setItemData ] = useState([]);
+  // const [ loading, setLoading ] = useState(false);
   const onSubmit = () =>{ 
     // event.preventDefault();
     // const user
+    const url = "https://mintcondition2.auth.us-east-1.amazoncognito.com"
+    const client_id = "55gonmd538j2k0ob6s6ltaorvj"
+    const redirect_uri = "http://localhost:3000/homepage"
+    window.location.href = url + "/login?client_id=" + client_id + "&response_type=code&scope=email+openid&redirect_uri=" + redirect_uri
   }
 
   return (
@@ -28,7 +32,7 @@ function Login(){
                 </Typography>
             </Grid>
           <Grid item xs={13}> 
-            <img src={logo} align="center"/>
+            <img src={logo} alt='logo' align="center" style={{height:500}}/>
           </Grid>
           <Grid> 
           </Grid>
