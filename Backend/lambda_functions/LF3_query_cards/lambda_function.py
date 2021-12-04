@@ -185,11 +185,6 @@ def lambda_handler(event, context):
         # TODO check database for bucket, key, and return a signed url with the image
 
     elif path.contains("/user/"):
-        if not hasattr(event['pathParameters'], 'id'):
-                return unexpected_error("id not provided")
-
-        card_id = event['pathParameters']['id']
-
         user_obj = {
             "user_id": event["requestContext"]["authorizer"]["claims"]["cognito:username"],
             "email": event["requestContext"]["authorizer"]["claims"]["email"],
