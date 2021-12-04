@@ -3,7 +3,6 @@ import pymysql
 import boto3
 import urllib3
 import os
-
 s3=boto3.client('s3')
 
 '''
@@ -12,12 +11,12 @@ Refer to https://stackoverflow.com/questions/49715482/how-to-access-the-url-that
 
 region = 'us-east-1'
 
-rdsConn = pymysql.connect(host=os.environ['DB_HOST'],
-                            user=os.environ['DB_USER'],
-                            password=os.environ['DB_PASSWORD'],
-                            database=os.environ['DB_DATABASE'],
-                            charset='utf8mb4',
-                            cursorclass=pymysql.cursors.DictCursor)
+rdsConn = pymysql.connect(host=f'trading-cards.c49euq66g8jj.{region}.rds.amazonaws.com',
+                             user='admin',
+                             password='c3iTGk4gKXp4JRH',
+                             database='mint_condition',
+                             charset='utf8mb4',
+                             cursorclass=pymysql.cursors.DictCursor)
 
 os_host = os.environ['os_url']
 os_username = os.environ['os_username']
@@ -27,6 +26,7 @@ os_url = os_host + os_index
 
 
 def lambda_handler(event, context):
+    print(event)
     path =  event["path"]
     user_id = event['requestContext']['authorizer']['claims']['cognito:username']
     httpMethod = event['httpMethod']
@@ -182,8 +182,6 @@ def lambda_handler(event, context):
 
         return real_response(results)
 
-        # TODO check database for bucket, key, and return a signed url with the image
-
     elif path.contains("/user/"):
         if not hasattr(event['pathParameters'], 'id'):
                 return unexpected_error("id not provided")
@@ -238,7 +236,7 @@ def search_opensearch(os_payload):
     http = urllib3.PoolManager()
     headers = urllib3.make_headers(basic_auth=f"{os_username}:{os_pw}")
     headers['Content-Type'] = 'application/json'
-    response = http.request('GET',
+    response = http.request('POST',
                     os_url + "/_search",
                     body = json.dumps(os_payload),
                     headers = headers,
