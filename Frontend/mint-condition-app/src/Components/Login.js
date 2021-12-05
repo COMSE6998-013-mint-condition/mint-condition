@@ -16,7 +16,7 @@ function Login(){
     const url = "https://mintcondition2.auth.us-east-1.amazoncognito.com"
     const client_id = "55gonmd538j2k0ob6s6ltaorvj"
     const redirect_uri = "http://localhost:3000/homepage"
-    window.location.href = url + "/login?client_id=" + client_id + "&response_type=code&scope=email+openid&redirect_uri=" + redirect_uri
+    window.location.href = url + "/login?client_id=" + client_id + "&response_type=token&scope=email+openid&redirect_uri=" + redirect_uri
   }
 
   return (
@@ -31,12 +31,12 @@ function Login(){
                 An Automated Trading Card Evaulator
                 </Typography>
             </Grid>
-          <Grid item xs={13}> 
+          <Grid item xs={false}> 
             <img src={logo} alt='logo' align="center" style={{height:500}}/>
           </Grid>
           <Grid> 
           </Grid>
-          <Grid item xs={13}>
+          <Grid item xs={false}>
             <Button variant="contained" onClick={onSubmit} style={{height:80, width: 400, fontSize: 40, backgroundColor: "#FFFDD0"}}>Login / Sign Up</Button>
           </Grid>
         </Grid>

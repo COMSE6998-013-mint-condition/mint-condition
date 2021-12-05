@@ -8,8 +8,8 @@ import { check_auth_code } from '../utils/auth_helpers';
 
 const useStyles = makeStyles({
   smDropzone: {
-    height: 750,
-    width: 700
+    height: 400,
+    width: 600
   },
 });
 
@@ -17,9 +17,9 @@ function HomePage(props){
   check_auth_code();
   const classes = useStyles();
   return (
-      <Container maxWidth='md' style={{marginTop : 22}} >
+      <Container maxWidth='md' style={{}} >
         <Header/>
-        <Grid style={{position: 'absolute', left: 1100, bottom: 550,}}>
+        <Grid style={{flex:1, marginTop: 150}}>
           <DropzoneArea classes={{root: classes.smDropzone}} dropzoneText={"Upload a Card"}/>
         </Grid>
         <CardList/>
