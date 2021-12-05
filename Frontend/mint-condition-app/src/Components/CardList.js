@@ -28,14 +28,25 @@ function CardList(){
 
   // get a list of user cards and set state of images to be the list of images
   function getCards() {
-    // TODO add api call
-    // TODO when a card is clicked, route to card page
-    let urls = ['something'];
-    let card_name = "something";
-    let images_html = urls.map(url => {
-      return <img key={card_name} src={url} alt={card_name} onClick={() => {navigate('/card', {state: {'card_name':card_name}})}}/>
-    })
-    setImages(images_html)
+    // send get request
+    const url = 'https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/dev/cards'
+    const headers = {
+      'Authorization': localStorage.getItem('id_token'),
+      'x-api-key': 'VQi4PffXXeaUzTIaEBnzUaGdnP6sPy9EUWtZSdp8'
+    }
+    axios.get(url, {headers}).then(response => {
+      let cards = response.data.cards;
+      let images_html = cards.map(card => {
+        let card_name = card.path.substring(card.path.lastIndexOf('/')+1, card.path.length) //hack to get image name since we don't have label yet
+        return <img style={{width:250, height:350, marginTop:20}} key={card_name} src={card.path} alt={card_name} onClick={() => {
+          navigate('/card', {state: {'card':card}})}
+        }/>
+      });
+      // only update if the list has changed, otherwise we recurse forever because we call get_user_info again
+      if (images_html.length !== images.length) {
+        setImages(images_html)
+      }
+    });
   }
 
   //function is called when card is added to dropzone area
@@ -60,10 +71,11 @@ function CardList(){
     const key = image.name
     const headers = {
       'Authorization': localStorage.getItem('id_token'),
-      "Content-Type": "image/jpeg",
-      "x-amz-meta-customLabels": labels,
-      "X-Key": key,
-      "x-amz-meta-user": user
+      'Content-Type': 'image/jpeg',
+      'X-Key': key,
+      'x-amz-meta-customLabels': labels,
+      'x-amz-meta-user':user,
+      'x-api-key': 'VQi4PffXXeaUzTIaEBnzUaGdnP6sPy9EUWtZSdp8'
     }
     axios.put(url, image, {headers}).then(response => console.log(response));
     //TODO if fails, tell user

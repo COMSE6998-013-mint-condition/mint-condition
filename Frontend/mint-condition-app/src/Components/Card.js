@@ -20,14 +20,14 @@ function Card(props){
   check_auth_code();
 
   const location = useLocation();
-  const card_name = location.state.card_name
-  //TODO get card details from api
   let rows = []
-  if (!card_name) {
-    //this means we navigated to this page without clicking a card.
-    rows = [createData('n/a', 0, 'n/a', 0, 0, 'n/a')]
+  if(location.state && location.state.card) {
+    const card = location.state.card
+    let card_name = card.path.substring(card.path.lastIndexOf('/')+1, card.path.length) //hack to get image name since we don't have label yet
+    rows = [createData(card_name, 'n/a', card.condition_label, 'n/a', 'n/a', 'n/a')];
   } else {
-    rows = [createData(card_name, 159, 'Mint', 24, 1000, 'In Stock')];
+    //this means we navigated to this page without a state (most likely typed in the url instead of clicking a card)
+    rows = [createData('n/a', 0, 'n/a', 0, 0, 'n/a')]
   }
   
   return (
