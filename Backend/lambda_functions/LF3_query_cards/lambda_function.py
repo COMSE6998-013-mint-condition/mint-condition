@@ -40,7 +40,7 @@ def lambda_handler(event, context):
             with rdsConn.cursor() as cursor:
 
                 sql = """SELECT card_condition_name as condition_label, card_condition_descr as condition_desc, 
-                user_id as owner_name, card_id, CONCAT(%s, card_s3_key) as path, card_label as label,
+                user_id as owner_name, c.card_id, CONCAT(%s, card_s3_key) as path, card_label as label,
                 max_price as max_value, min_price as min_value, `count`, mean_price as mean_value
                 FROM cards c
                 LEFT JOIN card_conditions ON c.card_condition_id = card_conditions.card_condition_id
@@ -87,7 +87,7 @@ def lambda_handler(event, context):
             with rdsConn.cursor() as cursor:
                 
                 sql = """SELECT card_condition_name as condition_label, card_condition_descr as condition_desc, 
-                user_id as owner_name, card_id, CONCAT(%s, card_s3_key) as path, card_label as label,
+                user_id as owner_name, c.card_id, CONCAT(%s, card_s3_key) as path, card_label as label,
                 max_price as max_value, min_price as min_value, `count`, mean_price as mean_value
                 FROM cards c
                 LEFT JOIN card_conditions ON c.card_condition_id = card_conditions.card_condition_id
