@@ -131,7 +131,7 @@ def search_ebay(card_id, keywords="", entries=100, num_pages=1):
 
         # refine keyword
         if 'card' not in keywords.lower() and 'cards' not in keywords.lower():
-            keywords += 'trading card'
+            keywords += ' trading card'
         
         for page_num in range(0, num_pages):
             params = {
@@ -173,16 +173,6 @@ def rds_insert_ebay(conn, data):
     '''
     Insert data into RDS 
     '''
-    if conn.close:
-        conn = pymysql.connect(host=os.environ['DB_HOST'],
-            user=os.environ['DB_USER'],
-            password=os.environ['DB_PASSWORD'],
-            database=os.environ['DB_DATABASE'],
-            charset='utf8mb4',
-            cursorclass=pymysql.cursors.DictCursor
-        )
-
-
     with conn.cursor() as cursor:
         sql = '''
             INSERT INTO `ebay_price_data` 
@@ -194,7 +184,6 @@ def rds_insert_ebay(conn, data):
         insert_id = conn.insert_id()
         print("Successfully inserted:", insert_id)
         return insert_id
-
 
 def get_s3_metadata(photo, bucket):
     response = s3.head_object(Bucket=bucket, Key=photo)

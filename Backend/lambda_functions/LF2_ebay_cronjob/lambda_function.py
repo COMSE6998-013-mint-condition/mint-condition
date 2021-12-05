@@ -77,7 +77,7 @@ def search_ebay(card_id, keywords="", entries=100, num_pages=1):
 
         # refine keyword
         if 'card' not in keywords.lower() and 'cards' not in keywords.lower():
-            keywords += 'trading card'
+            keywords += ' trading card'
         
         for page_num in range(0, num_pages):
             params = {
