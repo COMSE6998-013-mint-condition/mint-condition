@@ -6,8 +6,8 @@ import pymysql
 import os
 import time
 
-# from ebaysdk.finding import Connection
-# from ebaysdk.exception import ConnectionError
+from ebaysdk.finding import Connection
+from ebaysdk.exception import ConnectionError
 import datetime
 import math
 
@@ -21,11 +21,10 @@ os_pw = os.environ["os_pw"]
 os_index = 'cards'
 os_url = os_host + os_index
 
-# client = Connection(
-#     domain='svcs.ebay.com', # SANDBOX: svcs.sandbox.ebay.com
-#     appid=os.environ['EBAY_PROD_CLIENT_ID'], 
-#     config_file=None)
-
+client = Connection(
+    domain='svcs.ebay.com', # SANDBOX: svcs.sandbox.ebay.com
+    appid=os.environ['EBAY_PROD_CLIENT_ID'], 
+    config_file=None)
 
 def lambda_handler(event, context):
     
@@ -48,15 +47,16 @@ def lambda_handler(event, context):
     card_id = rds_insert(rdsConn, user_id, label, time_created, bucket, key)
 
     # ebay API
-    # ebay_data = search_ebay(card_id=card_id, keywords=label) # returns dict of pricing data
-    # rds_insert_ebay(rdsConn, ebay_data)
+    ebay_data = search_ebay(card_id=card_id, keywords=label.replace(',', ' ')) # returns dict of pricing data
+    if ebay_data:
+        rds_insert_ebay(rdsConn, ebay_data)
 
     #TODO make sure condition is a float value
     condition = invoke_sagemaker(bucket, key) 
 
     condition_name = rds_update_condition(rdsConn, card_id, condition)
 
-    split_labels = label.strip().split(",")
+    split_labels = [l.strip() for l in label.split(',')]
     upload_to_opensearch(card_id=card_id, user_id=user_id, created_timestmap=time_created, labels=split_labels, condition=condition_name)
     
     rdsConn.close()
@@ -131,7 +131,7 @@ def search_ebay(card_id, keywords="", entries=100, num_pages=1):
 
         # refine keyword
         if 'card' not in keywords.lower() and 'cards' not in keywords.lower():
-            keywords += 'cards'
+            keywords += ' trading card'
         
         for page_num in range(0, num_pages):
             params = {
@@ -167,22 +167,12 @@ def search_ebay(card_id, keywords="", entries=100, num_pages=1):
     except ConnectionError as e:
         print("Error extracting ebay data", e)
         print(e.response.dict())
-
+        return None
 
 def rds_insert_ebay(conn, data):
     '''
     Insert data into RDS 
     '''
-    if conn.close:
-        conn = pymysql.connect(host=os.environ['DB_HOST'],
-            user=os.environ['DB_USER'],
-            password=os.environ['DB_PASSWORD'],
-            database=os.environ['DB_DATABASE'],
-            charset='utf8mb4',
-            cursorclass=pymysql.cursors.DictCursor
-        )
-
-
     with conn.cursor() as cursor:
         sql = '''
             INSERT INTO `ebay_price_data` 
@@ -194,7 +184,6 @@ def rds_insert_ebay(conn, data):
         insert_id = conn.insert_id()
         print("Successfully inserted:", insert_id)
         return insert_id
-
 
 def get_s3_metadata(photo, bucket):
     response = s3.head_object(Bucket=bucket, Key=photo)

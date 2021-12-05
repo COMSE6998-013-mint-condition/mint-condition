@@ -9,12 +9,13 @@ Resources:
     Properties:
       LayerName: ebaysdk
       Description: "Ebay API SDK (Python)"
-      ContentUri: ./lambda_layers/dependencies/ebaysdk/
+      ContentUri: ./lambda_layers/dependencies/ebaysdk_layer/
       CompatibleRuntimes:
         - python3.9
         - python3.8
+      RetentionPolicy: Delete
     Metadata:
-      BuildMethod: python3.9
+      BuildMethod: python3.8
   ## Lambda to upload images
   MINTLF1:
     Type: 'AWS::Serverless::Function'
@@ -40,6 +41,8 @@ Resources:
       Layers: 
         - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-PyMySQL:4
         - !Ref EbaySDKLayer
+        - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-requests:25
+        - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-lxml:7
       Policies:
         - AWSSecretsManagerGetSecretValuePolicy:
             SecretArn: !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:*'
@@ -58,7 +61,7 @@ Resources:
     Properties:
       FunctionName: MINT_LF2_ebay_cronjob
       Handler: lambda_function.lambda_handler
-      Runtime: python3.9
+      Runtime: python3.8
       CodeUri: ./lambda_functions/LF2_ebay_cronjob
       Description: 'CCBD Project: Lambda function for trading card label prediction'
       MemorySize: 128
@@ -66,6 +69,8 @@ Resources:
       Layers: 
         - !Ref EbaySDKLayer
         - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-PyMySQL:4
+        - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-requests:25
+        - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-lxml:7
       Environment:
         Variables:
           DB_HOST : '{{resolve:secretsmanager:mint-condition-rds-secrets:SecretString:DB_HOST}}'

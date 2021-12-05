@@ -15,12 +15,14 @@ region = 'us-east-1'
 os_host = os.environ['os_url']
 os_username = os.environ['os_username']
 os_pw = os.environ["os_pw"]
-os_index = 'cards/_doc'
+os_index = 'cards'
 os_url = os_host + os_index
 
 
 def lambda_handler(event, context):
-
+    
+    pathUrl = "http://dcmt4a9xlixn7.cloudfront.net/"
+    
     rdsConn = pymysql.connect(host=os.environ['DB_HOST'],
                               user=os.environ['DB_USER'],
                               password=os.environ['DB_PASSWORD'],
@@ -36,12 +38,14 @@ def lambda_handler(event, context):
     if path == "/cards":
         if httpMethod == "GET":
             with rdsConn.cursor() as cursor:
+                # TODO(Adam): Update query to include last historical data
+                # TODO(Adam): add CDN path to query
                 sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                user_id as `owner_name`, `cards`.`card_id`, `card_bucket`, `card_s3_key`, `card_value` as `value`
+                user_id as `owner_name`, `cards`.`card_id`, CONCAT(%s, `card_s3_key`) as `path`, `card_label` as `label`
                 FROM `cards`
                 LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
                 WHERE `cards`.`user_id` = %s"""
-                cursor.execute(sql, (str(user_id),))
+                cursor.execute(sql, (pathUrl, str(user_id),))
                 cards = { "cards" : [] } if cursor.rowcount == 0 else { "cards": process_cards_obj(cursor.fetchall()) }
                 return real_response(cards)
         else:
@@ -50,14 +54,14 @@ def lambda_handler(event, context):
     elif path == "/card":
         if httpMethod == "POST": #assuming comma separated vals
 
-            if not hasattr(event['pathParameters'], 'id'):
+            if 'id' not in json.loads(event['body']):
                 return unexpected_error("id not provided")
 
-            if not hasattr(event['body'], 'labels'):
-                return unexpected_error("labels not provided")
+            if 'label' not in json.loads(event['body']):
+                return unexpected_error("label not provided")
 
-            card_id = event['pathParameters']['id']
-            labels = ",".join(event['body']['labels'])
+            card_id = json.loads(event['body'])['id']
+            labels = json.loads(event['body'])['label']
 
             with rdsConn.cursor() as cursor:
                 sql = """SELECT `card_id` 
@@ -73,18 +77,20 @@ def lambda_handler(event, context):
                 sql = "UPDATE `cards` SET `card_label` = %s WHERE `card_id` = %s"
                 cursor.execute(sql, (labels, str(card_id),))
 
-            #TODO update opensearch too
+            if update_card_labels_os(user_id, card_id, labels) == 0:
+                # TODO(Adam): Revert DB if failure
+                unexpected_error('unable to update opensearch')
 
             with rdsConn.cursor() as cursor:
                 
                 sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                user_id as `owner_name`, `cards`.`card_id`, `card_bucket`, `card_s3_key`, `card_value` as `value`
+                user_id as `owner_name`, `cards`.`card_id`, CONCAT(%s, `card_s3_key`) as `path`, `card_label` as `label`
                 FROM `cards`
                 LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
                 WHERE `cards`.`user_id` = %s
                     AND `cards`.`card_id` = %s"""
-                
-                cursor.execute(sql, (str(user_id), str(card_id),))
+            
+                cursor.execute(sql, (pathUrl, str(user_id), str(card_id),))
 
                 #bad implementation: theoretically could have been deleted between this and first part (cut corners)
                 return real_response(process_card_obj(cursor.fetchone()))
@@ -94,26 +100,31 @@ def lambda_handler(event, context):
 
     elif "/card/" in path:
         if httpMethod == "GET":
-
-            if not hasattr(event['pathParameters'], 'id'):
+        
+            if not 'id' in event['pathParameters']:
                 return unexpected_error("id not provided")
 
             card_id = event['pathParameters']['id']
-
+            
+            card = None
+            
             with rdsConn.cursor() as cursor:
+
                 sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                user_id as `owner_name`, `cards`.`card_id`, `card_bucket`, `card_s3_key`, `card_value` as `value`
+                user_id as `owner_name`, `cards`.`card_id`, CONCAT(%s, `card_s3_key`) as `path`, `card_label` as `label`
                 FROM `cards`
                 LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
                 WHERE `cards`.`user_id` = %s
                     AND `cards`.`card_id` = %s"""
-                cursor.execute(sql, (str(user_id), str(card_id),))
+            
+                cursor.execute(sql, (pathUrl, str(user_id), str(card_id),))
                 card = {} if cursor.rowcount == 0 else cursor.fetchone()
-                return real_response(process_card_obj(card))
+                
+            return real_response(process_card_obj(card))
 
         elif httpMethod == "DELETE":
 
-            if not hasattr(event['pathParameters'], 'id'):
+            if not 'id' in event['pathParameters']:
                 return unexpected_error("id not provided")
 
             card_id = event['pathParameters']['id']
@@ -122,13 +133,16 @@ def lambda_handler(event, context):
 
             with rdsConn.cursor() as cursor:
                 sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                user_id as `owner_name`, `cards`.`card_id`, `card_bucket`, `card_s3_key`, `card_value` as `value`
+                user_id as `owner_name`, `cards`.`card_id`, CONCAT(%s, `card_s3_key`) as `path`, `card_label` as `label`
                 FROM `cards`
                 LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
                 WHERE `cards`.`user_id` = %s
                     AND `cards`.`card_id` = %s"""
-                cursor.execute(sql, (str(user_id), str(card_id),))
+            
+                cursor.execute(sql, (pathUrl, str(user_id), str(card_id),))
+
                 if cursor.rowcount == 0:
+                    #TODO(Adam): Revert delete if it fails
                     return unexpected_error("card not found for user")
                 
                 card = process_card_obj(cursor.fetchone())
@@ -142,7 +156,8 @@ def lambda_handler(event, context):
                 return unexpected_error("deletion failed")
 
 
-            #TODO delete from opensearch too
+            if delete_card_os(user_id, card_id) == 0:
+               return unexpected_error("could not delete from opensearch")
 
             return real_response(card)
 
@@ -153,7 +168,9 @@ def lambda_handler(event, context):
     #TODO: available query params for now: condition, label
     elif "search" in path:
         results = []
+        cards = []
         if httpMethod == "GET":
+            #TODO(Bharathi): Partial matching
             os_payload = {
                 "size": 10000,
                 "query": {
@@ -185,36 +202,29 @@ def lambda_handler(event, context):
                     }
                 )
             results = search_opensearch(os_payload)
-
-            sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                    user_id as `owner_name`, `cards`.`card_id`, `card_bucket`, `card_s3_key`, `card_value` as `value`
-                    FROM `cards`
-                    LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
-                    WHERE `cards`.`card_id` = %s"""
-
-            execution_params = []
+        
+            sql = f"""SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
+                user_id as `owner_name`, `cards`.`card_id`, CONCAT('{pathUrl}', `card_s3_key`) as `path`, `card_label` as `label`
+                FROM `cards`
+                LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
+                WHERE `cards`.`card_id` IN (%s)"""
 
             if results:
-                for i, os_card in enumerate(results):
-                    execution_params.append(os_card['card_id'])
-                    if i != 0:
-                        sql += """OR `cards`.`card_id` = %s"""
-                
+                list_of_ids = [os_object['card_id'] for os_object in results]
+                format_strings = ','.join(['%s'] * len(list_of_ids))
                 with rdsConn.cursor() as cursor:
-                    cursor.execute(sql, tuple(execution_params))
-                all_cards = cursor.fetchall()
-                ret_cards = []
-                for card in all_cards:
-                    ret_cards.append(process_card_obj(card))
+                    cursor.execute(sql % format_strings,
+                        tuple(list_of_ids))
+                    cards = { "cards" : [] } if cursor.rowcount == 0 else { "cards": process_cards_obj(cursor.fetchall()) }
 
         else:
             return raise_method_not_allowed()
 
-        return real_response(ret_cards)
+        return real_response(cards)
 
         # TODO check database for bucket, key, and return a signed url with the image
 
-    elif "/user/" in path:
+    elif "/user" in path:
         user_obj = {
             "user_id": event["requestContext"]["authorizer"]["claims"]["cognito:username"],
             "email": event["requestContext"]["authorizer"]["claims"]["email"],
@@ -237,25 +247,8 @@ def process_cards_obj(cards):
 
     return processedCards
 
-
-#add s3 url
 def process_card_obj(card):
-
-    if card == {} or not hasattr(card, 'card_bucket') or not hasattr(card, 'card_s3_key'):
-        return card
-
-    card['url'] = s3.generate_presigned_url(
-        ClientMethod='get_object',
-        Params={
-            'Bucket': card['card_bucket'],
-            'Key': card['card_s3_key']
-        },
-        ExpiresIn=1800
-    )
-
-    delattr(card, 'card_bucket')
-    delattr(card, 'card_s3_key')
-
+    #add price object
     return card
 
 
@@ -273,6 +266,88 @@ def search_opensearch(os_payload):
     return [obj['_source'] for obj in x['hits']['hits'] if '_source' in obj.keys()]
 
 
+def update_card_labels_os(user_id, card_id, labels):
+    # Put the user query into the query DSL for more accurate search results.
+    query = {
+            "query": {
+                "bool": {
+                    "must": [
+                        {
+                            "match": {
+                                "user_id": user_id
+                            }
+                        },
+                        {
+                            "match": {
+                                "card_id": card_id
+                            }
+                        }
+                    ]
+                }
+            },
+            "script" : {
+                "source": "ctx._source.labels = params.labels",
+                "lang": "painless",
+                "params" : {
+                    "labels" : [label.strip() for label in labels.split(',')]
+                }
+            }
+        }
+                
+    # Elasticsearch 6.x requires an explicit Content-Type header
+    http = urllib3.PoolManager()
+    headers = urllib3.make_headers(basic_auth=f"{os_username}:{os_pw}")
+    headers['Content-Type'] = 'application/json'
+
+    # Make the signed HTTP request
+    response = http.request('POST',
+            os_url + "/_update_by_query",
+            body = json.dumps(query),
+            headers = headers,
+            retries = False)
+    x = json.loads(response.data)
+
+    return x['updated']
+    
+        
+def delete_card_os(user_id, card_id):
+    # Put the user query into the query DSL for more accurate search results.
+    query = {
+            "query": {
+                "bool": {
+                    "must": [
+                        {
+                            "match": {
+                                "user_id": user_id
+                            }
+                        },
+                        {
+                            "match": {
+                                "card_id": card_id
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+                
+
+    # Elasticsearch 6.x requires an explicit Content-Type header
+    http = urllib3.PoolManager()
+    headers = urllib3.make_headers(basic_auth=f"{os_username}:{os_pw}")
+    headers['Content-Type'] = 'application/json'
+
+    # Make the signed HTTP request
+    response = http.request('POST',
+            os_url + "/_delete_by_query",
+            body = json.dumps(query),
+            headers = headers,
+            retries = False)
+    x = json.loads(response.data)
+
+    return x['deleted']
+      
+        
 def unexpected_error(error):
     return {
         'statusCode': 500,
@@ -287,18 +362,6 @@ def raise_method_not_allowed():
     }
 
 
-def dummy_response():
-    return {
-        'statusCode': 200,
-        'headers': {
-            'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Accept,x-amz-meta-customLabels',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,PUT,GET'
-        },
-        'body': "Hi there"
-    }
-
-
 #assume dict result format
 def real_response(result):
     return {
@@ -306,7 +369,7 @@ def real_response(result):
         'headers': {
             'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Accept,x-amz-meta-customLabels',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS,PUT,GET'
+            'Access-Control-Allow-Methods': 'OPTIONS,PUT,GET,POST,DELETE'
         },
         'body': json.dumps(result)
     }
