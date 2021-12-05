@@ -47,8 +47,9 @@ def lambda_handler(event, context):
     card_id = rds_insert(rdsConn, user_id, label, time_created, bucket, key)
 
     # ebay API
-    ebay_data = search_ebay(card_id=card_id, keywords=label) # returns dict of pricing data
-    rds_insert_ebay(rdsConn, ebay_data)
+    ebay_data = search_ebay(card_id=card_id, keywords=label.replace(',', ' ')) # returns dict of pricing data
+    if ebay_data:
+        rds_insert_ebay(rdsConn, ebay_data)
 
     #TODO make sure condition is a float value
     condition = invoke_sagemaker(bucket, key) 
@@ -130,7 +131,7 @@ def search_ebay(card_id, keywords="", entries=100, num_pages=1):
 
         # refine keyword
         if 'card' not in keywords.lower() and 'cards' not in keywords.lower():
-            keywords += 'cards'
+            keywords += 'trading card'
         
         for page_num in range(0, num_pages):
             params = {
@@ -166,7 +167,7 @@ def search_ebay(card_id, keywords="", entries=100, num_pages=1):
     except ConnectionError as e:
         print("Error extracting ebay data", e)
         print(e.response.dict())
-
+        return None
 
 def rds_insert_ebay(conn, data):
     '''
