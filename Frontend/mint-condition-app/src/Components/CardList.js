@@ -28,6 +28,7 @@ function CardList(){
 
   // get a list of user cards and set state of images to be the list of images
   function getCards() {
+    console.log('getting cards')
     // send get request
     const url = 'https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/dev/cards'
     const headers = {
@@ -38,7 +39,7 @@ function CardList(){
       let cards = response.data.cards;
       let images_html = cards.map(card => {
         let card_name = card.path.substring(card.path.lastIndexOf('/')+1, card.path.length) //hack to get image name since we don't have label yet
-        return <img style={{width:250, height:350, marginTop:20}} key={card_name} src={card.path} alt={card_name} onClick={() => {
+        return <img style={{width:250, height:350, margin:20}} key={card_name} src={card.path} alt={card_name} onClick={() => {
           navigate('/card', {state: {'card':card}})}
         }/>
       });
@@ -80,8 +81,8 @@ function CardList(){
     axios.put(url, image, {headers}).then(response => console.log(response));
     //TODO if fails, tell user
 
-    //get cards because we now have a new card
-    getCards();
+    //get cards because we now have a new card, set timeout to 1 second to let the backend process the card
+    setTimeout(() => {getCards()}, 500);
   }
 
   return (
