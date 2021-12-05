@@ -275,13 +275,12 @@ def process_card_obj(card):
         "mean_value": card['mean_value']
     }
 
-    setattr(card, 'price_object', priceObj)
+    card['price_object'] = priceObj
 
-    delattr(card, 'max_value')
-    delattr(card, 'min_value')
-    delattr(card, 'mean_value')
-    delattr(card, 'count')
-
+    del card['max_value']
+    del card['min_value']
+    del card['mean_value']
+    del card['count']
 
     return card
 
