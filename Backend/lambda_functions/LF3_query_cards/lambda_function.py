@@ -94,7 +94,7 @@ def lambda_handler(event, context):
                 LEFT JOIN ebay_price_data eb ON eb.ebay_price_data_id = (
                     SELECT MAX(ebay_price_data_id) FROM ebay_price_data WHERE card_id = c.card_id
                 )
-                WHERE cards.user_id = %s
+                WHERE c.user_id = %s
                     AND c.card_id = %s"""
             
                 cursor.execute(sql, (pathUrl, str(user_id), str(card_id),))
@@ -125,7 +125,7 @@ def lambda_handler(event, context):
                 LEFT JOIN ebay_price_data eb ON eb.ebay_price_data_id = (
                     SELECT MAX(ebay_price_data_id) FROM ebay_price_data WHERE card_id = c.card_id
                 )
-                WHERE cards.user_id = %s
+                WHERE c.user_id = %s
                     AND c.card_id = %s"""
             
                 cursor.execute(sql, (pathUrl, str(user_id), str(card_id),))
@@ -151,7 +151,7 @@ def lambda_handler(event, context):
                 LEFT JOIN ebay_price_data eb ON eb.ebay_price_data_id = (
                     SELECT MAX(ebay_price_data_id) FROM ebay_price_data WHERE card_id = c.card_id
                 )
-                WHERE cards.user_id = %s
+                WHERE c.user_id = %s
                     AND c.card_id = %s"""
             
                 cursor.execute(sql, (pathUrl, str(user_id), str(card_id),))
