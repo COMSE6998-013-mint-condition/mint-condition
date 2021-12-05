@@ -268,6 +268,9 @@ def process_cards_obj(cards):
 
 def process_card_obj(card):
     
+    if not card:
+        return {}
+
     priceObj = {
         "max_value": card['max_value'],
         "min_value": card['min_value'],
