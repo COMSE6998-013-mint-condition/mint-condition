@@ -77,7 +77,7 @@ def search_ebay(card_id, keywords="", entries=100, num_pages=1):
 
         # refine keyword
         if 'card' not in keywords.lower() and 'cards' not in keywords.lower():
-            keywords += 'cards'
+            keywords += 'trading card'
         
         for page_num in range(0, num_pages):
             params = {
@@ -118,7 +118,7 @@ def search_ebay_helper(card):
     '''
     Helper function pass data into search_ebay function via multithreading
     '''
-    return search_ebay(card_id=card['card_id'], keywords=card['card_label'], entries=100)
+    return search_ebay(card_id=card['card_id'], keywords=card['card_label'].replace(',', ' '), entries=100)
 
 def get_all_cards():
     '''
@@ -149,7 +149,7 @@ def lambda_handler(event, context):
             result = []
             with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
                 result.extend(list(executor.map(search_ebay_helper, cards)))
-            #rds_insert(result)
+            rds_insert(result)
         return {
             'statusCode': 200,
             'headers': {
