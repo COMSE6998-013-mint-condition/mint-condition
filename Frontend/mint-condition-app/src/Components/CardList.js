@@ -4,6 +4,8 @@ import { Container, makeStyles, Typography } from '@material-ui/core';
 import {DropzoneArea} from 'material-ui-dropzone'
 import { get_user_info } from '../utils/auth_helpers';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+
 
 const useStyles = makeStyles({
   smDropzone: {
@@ -15,6 +17,7 @@ const useStyles = makeStyles({
 function CardList(){
   const classes = useStyles();
   const [images, setImages] = useState([]);
+  const navigate = useNavigate();
 
   // get user info, then set user info, then get cards
   let user_info = null
@@ -27,9 +30,10 @@ function CardList(){
   function getCards() {
     // TODO add api call
     // TODO when a card is clicked, route to card page
-    let urls = [];
+    let urls = ['something'];
+    let card_name = "something";
     let images_html = urls.map(url => {
-      return <img key={url} src={url} alt={url}/>
+      return <img key={card_name} src={url} alt={card_name} onClick={() => {navigate('/card', {state: {'card_name':card_name}})}}/>
     })
     setImages(images_html)
   }

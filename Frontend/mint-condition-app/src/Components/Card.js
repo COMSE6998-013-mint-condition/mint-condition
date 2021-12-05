@@ -9,18 +9,27 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { check_auth_code } from '../utils/auth_helpers';
+import {useLocation} from 'react-router-dom';
 
 
 function createData(name, related_cards, quality, requests, value, availability) {
   return { name, related_cards, quality, requests, value, availability };
 }
 
-const rows = [
-  createData('Pikachu', 159, 'Mint', 24, 1000, 'In Stock'),
-];
-
-function Card(){
+function Card(props){
   check_auth_code();
+
+  const location = useLocation();
+  const card_name = location.state.card_name
+  //TODO get card details from api
+  let rows = []
+  if (!card_name) {
+    //this means we navigated to this page without clicking a card.
+    rows = [createData('n/a', 0, 'n/a', 0, 0, 'n/a')]
+  } else {
+    rows = [createData(card_name, 159, 'Mint', 24, 1000, 'In Stock')];
+  }
+  
   return (
       <Container maxWidth='md' style={{marginTop : 22}}>
         <Header/>
