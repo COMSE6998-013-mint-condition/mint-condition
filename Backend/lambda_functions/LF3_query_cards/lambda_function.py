@@ -113,8 +113,6 @@ def lambda_handler(event, context):
 
             card_id = event['pathParameters']['id']
             
-            card = None
-            
             with rdsConn.cursor() as cursor:
 
                 sql = """SELECT card_condition_name as condition_label, card_condition_descr as condition_desc, 
@@ -127,9 +125,13 @@ def lambda_handler(event, context):
                 )
                 WHERE c.user_id = %s
                     AND c.card_id = %s"""
-            
+
                 cursor.execute(sql, (pathUrl, str(user_id), str(card_id),))
-                card = {} if cursor.rowcount == 0 else cursor.fetchone()
+                if cursor.rowcount == 0:
+                    # TODO(Adam): Revert delete if it fails
+                    return unexpected_error("card not found for user")
+
+                card = process_card_obj(cursor.fetchone())
                 
             return real_response(process_card_obj(card))
 
