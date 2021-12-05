@@ -9,10 +9,11 @@ Resources:
     Properties:
       LayerName: ebaysdk
       Description: "Ebay API SDK (Python)"
-      ContentUri: ./lambda_layers/dependencies/ebaysdk/
+      ContentUri: ./lambda_layers/dependencies/ebaysdk_layer/
       CompatibleRuntimes:
         - python3.9
         - python3.8
+      RetentionPolicy: Delete
     Metadata:
       BuildMethod: python3.9
   ## Lambda to upload images
