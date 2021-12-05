@@ -38,13 +38,16 @@ def lambda_handler(event, context):
     if path == "/cards":
         if httpMethod == "GET":
             with rdsConn.cursor() as cursor:
-                # TODO(Adam): Update query to include last historical data
-                # TODO(Adam): add CDN path to query
-                sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                user_id as `owner_name`, `cards`.`card_id`, CONCAT(%s, `card_s3_key`) as `path`, `card_label` as `label`
-                FROM `cards`
-                LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
-                WHERE `cards`.`user_id` = %s"""
+
+                sql = """SELECT card_condition_name as condition_label, card_condition_descr as condition_desc, 
+                user_id as owner_name, card_id, CONCAT(%s, card_s3_key) as path, card_label as label,
+                max_price as max_value, min_price as min_value, `count`, mean_price as mean_value
+                FROM cards c
+                LEFT JOIN card_conditions ON c.card_condition_id = card_conditions.card_condition_id
+                LEFT JOIN ebay_price_data eb ON eb.ebay_price_data_id = (
+                    SELECT MAX(ebay_price_data_id) FROM ebay_price_data WHERE card_id = c.card_id
+                )
+                WHERE c.user_id = %s"""
                 cursor.execute(sql, (pathUrl, str(user_id),))
                 cards = { "cards" : [] } if cursor.rowcount == 0 else { "cards": process_cards_obj(cursor.fetchall()) }
                 return real_response(cards)
@@ -64,17 +67,17 @@ def lambda_handler(event, context):
             labels = json.loads(event['body'])['label']
 
             with rdsConn.cursor() as cursor:
-                sql = """SELECT `card_id` 
-                FROM `cards`
-                WHERE `cards`.`user_id` = %s
-                    AND `cards`.`card_id` = %s"""
+                sql = """SELECT card_id 
+                FROM cards
+                WHERE cards.user_id = %s
+                    AND cards.card_id = %s"""
                 cursor.execute(sql, (str(user_id), str(card_id),))
                 if cursor.rowcount == 0:
                     return unexpected_error("card not found for user")
                 
                 card = cursor.fetchone()
 
-                sql = "UPDATE `cards` SET `card_label` = %s WHERE `card_id` = %s"
+                sql = "UPDATE cards SET card_label = %s WHERE card_id = %s"
                 cursor.execute(sql, (labels, str(card_id),))
 
             if update_card_labels_os(user_id, card_id, labels) == 0:
@@ -83,12 +86,16 @@ def lambda_handler(event, context):
 
             with rdsConn.cursor() as cursor:
                 
-                sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                user_id as `owner_name`, `cards`.`card_id`, CONCAT(%s, `card_s3_key`) as `path`, `card_label` as `label`
-                FROM `cards`
-                LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
-                WHERE `cards`.`user_id` = %s
-                    AND `cards`.`card_id` = %s"""
+                sql = """SELECT card_condition_name as condition_label, card_condition_descr as condition_desc, 
+                user_id as owner_name, card_id, CONCAT(%s, card_s3_key) as path, card_label as label,
+                max_price as max_value, min_price as min_value, `count`, mean_price as mean_value
+                FROM cards c
+                LEFT JOIN card_conditions ON c.card_condition_id = card_conditions.card_condition_id
+                LEFT JOIN ebay_price_data eb ON eb.ebay_price_data_id = (
+                    SELECT MAX(ebay_price_data_id) FROM ebay_price_data WHERE card_id = c.card_id
+                )
+                WHERE cards.user_id = %s
+                    AND c.card_id = %s"""
             
                 cursor.execute(sql, (pathUrl, str(user_id), str(card_id),))
 
@@ -110,12 +117,16 @@ def lambda_handler(event, context):
             
             with rdsConn.cursor() as cursor:
 
-                sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                user_id as `owner_name`, `cards`.`card_id`, CONCAT(%s, `card_s3_key`) as `path`, `card_label` as `label`
-                FROM `cards`
-                LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
-                WHERE `cards`.`user_id` = %s
-                    AND `cards`.`card_id` = %s"""
+                sql = """SELECT card_condition_name as condition_label, card_condition_descr as condition_desc, 
+                user_id as owner_name, c.card_id, CONCAT(%s, card_s3_key) as path, card_label as label,
+                max_price as max_value, min_price as min_value, `count`, mean_price as mean_value
+                FROM cards c
+                LEFT JOIN card_conditions ON c.card_condition_id = card_conditions.card_condition_id
+                LEFT JOIN ebay_price_data eb ON eb.ebay_price_data_id = (
+                    SELECT MAX(ebay_price_data_id) FROM ebay_price_data WHERE card_id = c.card_id
+                )
+                WHERE cards.user_id = %s
+                    AND c.card_id = %s"""
             
                 cursor.execute(sql, (pathUrl, str(user_id), str(card_id),))
                 card = {} if cursor.rowcount == 0 else cursor.fetchone()
@@ -132,12 +143,16 @@ def lambda_handler(event, context):
             card = {}
 
             with rdsConn.cursor() as cursor:
-                sql = """SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                user_id as `owner_name`, `cards`.`card_id`, CONCAT(%s, `card_s3_key`) as `path`, `card_label` as `label`
-                FROM `cards`
-                LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
-                WHERE `cards`.`user_id` = %s
-                    AND `cards`.`card_id` = %s"""
+                sql = """SELECT card_condition_name as condition_label, card_condition_descr as condition_desc, 
+                user_id as owner_name, c.card_id, CONCAT(%s, card_s3_key) as path, card_label as label,
+                max_price as max_value, min_price as min_value, `count`, mean_price as mean_value
+                FROM cards c
+                LEFT JOIN card_conditions ON c.card_condition_id = card_conditions.card_condition_id
+                LEFT JOIN ebay_price_data eb ON eb.ebay_price_data_id = (
+                    SELECT MAX(ebay_price_data_id) FROM ebay_price_data WHERE card_id = c.card_id
+                )
+                WHERE cards.user_id = %s
+                    AND c.card_id = %s"""
             
                 cursor.execute(sql, (pathUrl, str(user_id), str(card_id),))
 
@@ -149,7 +164,7 @@ def lambda_handler(event, context):
 
             try:
                 with rdsConn.cursor() as cursor:
-                    sql = "DELETE FROM `cards` WHERE `card_id` = %s"
+                    sql = "DELETE FROM cards WHERE card_id = %s"
                     cursor.execute(sql, (str(card_id),))
                 
             except:
@@ -203,11 +218,15 @@ def lambda_handler(event, context):
                 )
             results = search_opensearch(os_payload)
         
-            sql = f"""SELECT `card_condition_name` as `condition_label`, `card_condition_descr` as `condition_desc`, 
-                user_id as `owner_name`, `cards`.`card_id`, CONCAT('{pathUrl}', `card_s3_key`) as `path`, `card_label` as `label`
-                FROM `cards`
-                LEFT JOIN `card_conditions` ON `cards`.`card_condition_id` = `card_conditions`.`card_condition_id`
-                WHERE `cards`.`card_id` IN (%s)"""
+            sql = f"""SELECT card_condition_name as condition_label, card_condition_descr as condition_desc, 
+                user_id as owner_name, c.card_id, CONCAT('{pathUrl}', card_s3_key) as path, card_label as label,
+                max_price as max_value, min_price as min_value, `count`, mean_price as mean_value
+                FROM cards c
+                LEFT JOIN card_conditions ON c.card_condition_id = card_conditions.card_condition_id
+                LEFT JOIN ebay_price_data eb ON eb.ebay_price_data_id = (
+                    SELECT MAX(ebay_price_data_id) FROM ebay_price_data WHERE card_id = c.card_id
+                )
+                WHERE c.card_id IN (%s)"""
 
             if results:
                 list_of_ids = [os_object['card_id'] for os_object in results]
@@ -248,7 +267,22 @@ def process_cards_obj(cards):
     return processedCards
 
 def process_card_obj(card):
-    #add price object
+    
+    priceObj = {
+        "max_value": card['max_value'],
+        "min_value": card['min_value'],
+        "count": card['count'],
+        "mean_value": card['mean_value']
+    }
+
+    setattr(card, 'price_object', priceObj)
+
+    delattr(card, 'max_value')
+    delattr(card, 'min_value')
+    delattr(card, 'mean_value')
+    delattr(card, 'count')
+
+
     return card
 
 
