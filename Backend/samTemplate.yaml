@@ -42,6 +42,7 @@ Resources:
         - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-PyMySQL:4
         - !Ref EbaySDKLayer
         - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-requests:25
+        - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-lxml:7
       Policies:
         - AWSSecretsManagerGetSecretValuePolicy:
             SecretArn: !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:*'
@@ -69,6 +70,7 @@ Resources:
         - !Ref EbaySDKLayer
         - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-PyMySQL:4
         - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-requests:25
+        - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-lxml:7
       Environment:
         Variables:
           DB_HOST : '{{resolve:secretsmanager:mint-condition-rds-secrets:SecretString:DB_HOST}}'
