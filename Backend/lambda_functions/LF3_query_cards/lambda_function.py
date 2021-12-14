@@ -116,6 +116,35 @@ def lambda_handler(event, context):
             return raise_method_not_allowed()
 
     elif "/card/" in path:
+
+        if '/prices' in path:
+            if httpMethod == "GET":
+                
+                if not 'id' in event['pathParameters']:
+                    return unexpected_error("id not provided")
+
+                card_id = event['pathParameters']['id']
+
+                with rdsConn.cursor() as cursor:
+                    sql = """SELECT card_id, card_label
+                    FROM cards
+                    WHERE cards.user_id = %s
+                        AND cards.card_id = %s"""
+
+                cursor.execute(sql, (str(user_id), str(card_id),))
+                if cursor.rowcount == 0:
+                    return unexpected_error("card not found for user")
+
+                sql = """ SELECT max_price as max_value, min_price as min_value, count, mean_price as mean_value
+                    FROM ebay_price_data
+                    WHERE card_id = %s"""
+                cursor.execute(sql, (str(card_id),))
+
+                prices = { "prices" : [] } if cursor.rowcount == 0 else { "prices": cursor.fetchall() }
+
+                return real_response(prices)
+
+
         if httpMethod == "GET":
         
             if not 'id' in event['pathParameters']:
@@ -177,7 +206,6 @@ def lambda_handler(event, context):
                 sql = """ SELECT * FROM cards WHERE card_id = %s"""
                 cursor.execute(sql, (str(card_id),))
                 cardBackupData = cursor.fetchone()
-
 
             try:
                 with rdsConn.cursor() as cursor:
