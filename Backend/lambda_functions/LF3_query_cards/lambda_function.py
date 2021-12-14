@@ -84,6 +84,8 @@ def lambda_handler(event, context):
                 # TODO(Adam): Revert DB if failure
                 unexpected_error('unable to update opensearch')
 
+            # TODO(Taku): update card value based on new labels in database
+
             with rdsConn.cursor() as cursor:
                 
                 sql = """SELECT card_condition_name as condition_label, card_condition_descr as condition_desc, 
@@ -181,13 +183,10 @@ def lambda_handler(event, context):
         else:
             return raise_method_not_allowed()
 
-    #TODO: price range, pagination, date range
-    #TODO: available query params for now: condition, label
     elif "search" in path:
         results = []
         cards = []
         if httpMethod == "GET":
-            #TODO(Bharathi): Partial matching
             os_payload = {
                 "size": 10000,
                 "query": {
@@ -242,8 +241,6 @@ def lambda_handler(event, context):
             return raise_method_not_allowed()
 
         return real_response(cards)
-
-        # TODO check database for bucket, key, and return a signed url with the image
 
     elif "/user" in path:
         user_obj = {
