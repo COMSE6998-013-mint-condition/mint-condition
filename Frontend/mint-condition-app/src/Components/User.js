@@ -24,7 +24,7 @@ function User(){
   const [rows, setRows] = useState([createData('Arthur Pikachu', 159, 'Seller', 24, '******', 500)]);
   get_user_info().then(response => {
     if(rows[0].name !== response['email']){
-      setRows([createData(response['email'], 0, 'n/a', '0,', 'n/a', 0)])
+      setRows([createData(response['email'], 0, 'n/a', '0', 'n/a', 0)])
     }
   })
   return (

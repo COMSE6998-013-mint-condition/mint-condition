@@ -14,7 +14,7 @@ const useStyles = makeStyles({
   },
 });
 
-function CardList(){
+function CardList() {
   const classes = useStyles();
   const [images, setImages] = useState([]);
   const navigate = useNavigate();
@@ -82,12 +82,14 @@ function CardList(){
     //TODO if fails, tell user
 
     //get cards because we now have a new card, set timeout to 1 second to let the backend process the card
-    setTimeout(() => {getCards()}, 500);
+    setTimeout(() => {getCards()}, 1);
+    window.location.reload();
   }
 
   return (
       <Container maxWidth='md' style={{marginTop : 40}} >
         <Typography variant="h5" style={{ }}>Uploaded Cards</Typography>
+        <br></br>
         <Grid style={{ }}>
           <DropzoneArea filesLimit={1} onChange={uploadCard} acceptedFiles={['image/*']} classes={{root: classes.smDropzone}} dropzoneText={"Upload a Card"}/>
           {images}
