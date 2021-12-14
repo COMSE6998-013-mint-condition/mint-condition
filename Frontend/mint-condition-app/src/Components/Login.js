@@ -15,7 +15,7 @@ function Login(){
     // const user
     const url = "https://mintcondition2.auth.us-east-1.amazoncognito.com"
     const client_id = "55gonmd538j2k0ob6s6ltaorvj"
-    const redirect_uri = "http://localhost:3000/homepage"
+    const redirect_uri = window.location.origin + "/homepage"
     window.location.href = url + "/login?client_id=" + client_id + "&response_type=token&scope=email+openid&redirect_uri=" + redirect_uri
   }
 
