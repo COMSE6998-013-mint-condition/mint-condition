@@ -205,7 +205,7 @@ def lambda_handler(event, context):
             if "label" in event["queryStringParameters"]:
                 os_payload["query"]["bool"]["must"].append(
                     {
-                        "match": {
+                        "match_phrase_prefix": {
                             "labels": event["queryStringParameters"]["label"]
                         }
                     }
@@ -213,7 +213,7 @@ def lambda_handler(event, context):
             if "condition" in event["queryStringParameters"]:
                 os_payload["query"]["bool"]["must"].append(
                     {
-                        "match": {
+                        "match_phrase_prefix": {
                             "condition": event["queryStringParameters"]["condition"]
                         }
                     }
