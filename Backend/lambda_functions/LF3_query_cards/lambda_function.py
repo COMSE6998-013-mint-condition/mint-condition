@@ -84,6 +84,8 @@ def lambda_handler(event, context):
                 # TODO(Adam): Revert DB if failure
                 unexpected_error('unable to update opensearch')
 
+            # TODO(Taku): update card value based on new labels in database
+
             with rdsConn.cursor() as cursor:
                 
                 sql = """SELECT card_condition_name as condition_label, card_condition_descr as condition_desc, 
@@ -94,7 +96,7 @@ def lambda_handler(event, context):
                 LEFT JOIN ebay_price_data eb ON eb.ebay_price_data_id = (
                     SELECT MAX(ebay_price_data_id) FROM ebay_price_data WHERE card_id = c.card_id
                 )
-                WHERE cards.user_id = %s
+                WHERE c.user_id = %s
                     AND c.card_id = %s"""
             
                 cursor.execute(sql, (pathUrl, str(user_id), str(card_id),))
@@ -113,8 +115,6 @@ def lambda_handler(event, context):
 
             card_id = event['pathParameters']['id']
             
-            card = None
-            
             with rdsConn.cursor() as cursor:
 
                 sql = """SELECT card_condition_name as condition_label, card_condition_descr as condition_desc, 
@@ -125,11 +125,15 @@ def lambda_handler(event, context):
                 LEFT JOIN ebay_price_data eb ON eb.ebay_price_data_id = (
                     SELECT MAX(ebay_price_data_id) FROM ebay_price_data WHERE card_id = c.card_id
                 )
-                WHERE cards.user_id = %s
+                WHERE c.user_id = %s
                     AND c.card_id = %s"""
-            
+
                 cursor.execute(sql, (pathUrl, str(user_id), str(card_id),))
-                card = {} if cursor.rowcount == 0 else cursor.fetchone()
+                if cursor.rowcount == 0:
+                    # TODO(Adam): Revert delete if it fails
+                    return unexpected_error("card not found for user")
+
+                card = process_card_obj(cursor.fetchone())
                 
             return real_response(process_card_obj(card))
 
@@ -151,7 +155,7 @@ def lambda_handler(event, context):
                 LEFT JOIN ebay_price_data eb ON eb.ebay_price_data_id = (
                     SELECT MAX(ebay_price_data_id) FROM ebay_price_data WHERE card_id = c.card_id
                 )
-                WHERE cards.user_id = %s
+                WHERE c.user_id = %s
                     AND c.card_id = %s"""
             
                 cursor.execute(sql, (pathUrl, str(user_id), str(card_id),))
@@ -179,13 +183,10 @@ def lambda_handler(event, context):
         else:
             return raise_method_not_allowed()
 
-    #TODO: price range, pagination, date range
-    #TODO: available query params for now: condition, label
     elif "search" in path:
         results = []
         cards = []
         if httpMethod == "GET":
-            #TODO(Bharathi): Partial matching
             os_payload = {
                 "size": 10000,
                 "query": {
@@ -203,7 +204,7 @@ def lambda_handler(event, context):
             if "label" in event["queryStringParameters"]:
                 os_payload["query"]["bool"]["must"].append(
                     {
-                        "match": {
+                        "match_phrase_prefix": {
                             "labels": event["queryStringParameters"]["label"]
                         }
                     }
@@ -211,7 +212,7 @@ def lambda_handler(event, context):
             if "condition" in event["queryStringParameters"]:
                 os_payload["query"]["bool"]["must"].append(
                     {
-                        "match": {
+                        "match_phrase_prefix": {
                             "condition": event["queryStringParameters"]["condition"]
                         }
                     }
@@ -241,8 +242,6 @@ def lambda_handler(event, context):
 
         return real_response(cards)
 
-        # TODO check database for bucket, key, and return a signed url with the image
-
     elif "/user" in path:
         user_obj = {
             "user_id": event["requestContext"]["authorizer"]["claims"]["cognito:username"],
@@ -268,6 +267,9 @@ def process_cards_obj(cards):
 
 def process_card_obj(card):
     
+    if not card:
+        return {}
+
     priceObj = {
         "max_value": card['max_value'],
         "min_value": card['min_value'],

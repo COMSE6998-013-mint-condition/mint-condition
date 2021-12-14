@@ -6,6 +6,7 @@ import Header from './Header'
 import CardList from './CardList'
 import { check_auth_code } from '../utils/auth_helpers';
 
+
 const useStyles = makeStyles({
   smDropzone: {
     height: 400,
