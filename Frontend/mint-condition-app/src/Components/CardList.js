@@ -36,6 +36,7 @@ function CardList(){
       'x-api-key': 'VQi4PffXXeaUzTIaEBnzUaGdnP6sPy9EUWtZSdp8'
     }
     axios.get(url, {headers}).then(response => {
+      console.log(response)
       let cards = response.data.cards;
       let images_html = cards.map(card => {
         let card_name = card.path.substring(card.path.lastIndexOf('/')+1, card.path.length) //hack to get image name since we don't have label yet
