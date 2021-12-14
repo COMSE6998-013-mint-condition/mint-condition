@@ -111,6 +111,36 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
+  /card/{id}/prices:
+    get:
+      summary: get card price history
+      description: get card price history
+      parameters:
+        - in: path
+          name: id
+          type: integer
+          required: true
+          description: Numeric ID of the card to get
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Card Prices
+          schema:
+            $ref: '#/definitions/PriceObjects'
+        '403':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/Error'
+        '405':
+          description: Method Not Defined
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
   /card:
     post:
       summary: update card information
@@ -226,9 +256,6 @@ paths:
 
 
 definitions:
-  LoginResponse:
-    type: string
-
   Card:
     type: object
     properties:
@@ -279,21 +306,13 @@ definitions:
       mean_value: 
         type: float
 
-  PriceObject:
+  PriceObjects:
     type: object
     properties:
       cards:
         type: array
         items:
           $ref: "#/definitions/PriceObject"
-        
-  Cards:
-    type: object
-    properties:
-      cards:
-        type: array
-        items:
-          $ref: "#/definitions/Card"
           
   User:
     type: object
