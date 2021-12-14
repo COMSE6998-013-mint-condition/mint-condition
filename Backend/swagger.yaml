@@ -274,8 +274,7 @@ definitions:
         type: string
       price_object:
         type: object
-        properties:
-          $ref: "#/definitions/PriceObject"
+        $ref: "#/definitions/PriceObject"
 
   Cards:
     type: object
@@ -297,14 +296,14 @@ definitions:
     type: object
     properties:
       max_value:
-        type: float
+        type: number
       min_value:
-        type: flaot
+        type: number
       count:
         type: integer
         format: int32
       mean_value: 
-        type: float
+        type: number
 
   PriceObjects:
     type: object
