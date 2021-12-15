@@ -65,9 +65,10 @@ def lambda_handler(event, context):
 
             card_id = json.loads(event['body'])['id']
             labels = json.loads(event['body'])['label']
+            oldLabels = None
 
             with rdsConn.cursor() as cursor:
-                sql = """SELECT card_id 
+                sql = """SELECT card_id, card_label
                 FROM cards
                 WHERE cards.user_id = %s
                     AND cards.card_id = %s"""
@@ -76,12 +77,19 @@ def lambda_handler(event, context):
                     return unexpected_error("card not found for user")
                 
                 card = cursor.fetchone()
+                oldLabels = card['card_label']
 
                 sql = "UPDATE cards SET card_label = %s WHERE card_id = %s"
                 cursor.execute(sql, (labels, str(card_id),))
 
             if update_card_labels_os(user_id, card_id, labels) == 0:
-                # TODO(Adam): Revert DB if failure
+                
+                with rdsConn.cursor() as cursor:
+
+                    sql = "UPDATE cards SET card_label = %s WHERE card_id = %s"
+                    cursor.execute(sql, (oldLabels, str(card_id),))
+
+
                 unexpected_error('unable to update opensearch')
 
             # TODO(Taku): update card value based on new labels in database
@@ -130,7 +138,7 @@ def lambda_handler(event, context):
 
                 cursor.execute(sql, (pathUrl, str(user_id), str(card_id),))
                 if cursor.rowcount == 0:
-                    # TODO(Adam): Revert delete if it fails
+
                     return unexpected_error("card not found for user")
 
                 card = process_card_obj(cursor.fetchone())
@@ -145,6 +153,7 @@ def lambda_handler(event, context):
             card_id = event['pathParameters']['id']
 
             card = {}
+            cardBackupData = {} #in case we need to revert
 
             with rdsConn.cursor() as cursor:
                 sql = """SELECT card_condition_name as condition_label, card_condition_descr as condition_desc, 
@@ -161,10 +170,14 @@ def lambda_handler(event, context):
                 cursor.execute(sql, (pathUrl, str(user_id), str(card_id),))
 
                 if cursor.rowcount == 0:
-                    #TODO(Adam): Revert delete if it fails
                     return unexpected_error("card not found for user")
                 
                 card = process_card_obj(cursor.fetchone())
+
+                sql = """ SELECT * FROM cards WHERE card_id = %s"""
+                cursor.execute(sql, (str(card_id),))
+                cardBackupData = cursor.fetchone()
+
 
             try:
                 with rdsConn.cursor() as cursor:
@@ -176,7 +189,16 @@ def lambda_handler(event, context):
 
 
             if delete_card_os(user_id, card_id) == 0:
-               return unexpected_error("could not delete from opensearch")
+
+                #undelete card
+                with rdsConn.cursor() as cursor:
+
+                    sql = """ INSERT INTO cards (card_id, card_label, card_condition_id, user_id, time_created, card_bucket, card_s3_key, max_notification_threshold, min_notification_threshold)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"""
+                    cursor.execute(sql, (card_id, str(cardBackupData['card_label']), cardBackupData['card_condition_id'], str(cardBackupData['user_id']), cardBackupData['time_created'], str(cardBackupData['card_bucket']), str(cardBackupData['card_s3_key']), cardBackupData['max_notification_threshold'], cardBackupData['min_notification_threshold']))
+
+
+                return unexpected_error("could not delete from opensearch")
 
             return real_response(card)
 
