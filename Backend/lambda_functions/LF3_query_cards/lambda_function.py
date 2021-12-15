@@ -127,18 +127,18 @@ def lambda_handler(event, context):
                     WHERE cards.user_id = %s
                         AND cards.card_id = %s"""
 
-                cursor.execute(sql, (str(user_id), str(card_id),))
-                if cursor.rowcount == 0:
-                    return unexpected_error("card not found for user")
+                    cursor.execute(sql, (str(user_id), str(card_id),))
+                    if cursor.rowcount == 0:
+                        return unexpected_error("card not found for user")
 
-                sql = """ SELECT max_price as max_value, min_price as min_value, count, mean_price as mean_value, timestamp
-                    FROM ebay_price_data
-                    WHERE card_id = %s"""
-                cursor.execute(sql, (str(card_id),))
+                    sql = """ SELECT max_price as max_value, min_price as min_value, count, mean_price as mean_value, timestamp
+                        FROM ebay_price_data
+                        WHERE card_id = %s"""
+                    cursor.execute(sql, (str(card_id),))
 
-                prices = {"prices": []} if cursor.rowcount == 0 else {"prices": cursor.fetchall()}
+                    prices = {"prices": []} if cursor.rowcount == 0 else {"prices": cursor.fetchall()}
 
-                return real_response(prices)
+                    return real_response(prices)
 
         if httpMethod == "GET":
 
@@ -451,5 +451,5 @@ def real_response(result):
             'Access-Control-Allow-Origin': '*',
             'Access-Control-Allow-Methods': 'OPTIONS,PUT,GET,POST,DELETE'
         },
-        'body': json.dumps(result)
+        'body': json.dumps(result, default=str)
     }
