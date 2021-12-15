@@ -304,11 +304,13 @@ definitions:
         format: int32
       mean_value: 
         type: number
+      timestamp:
+        type: string
 
   PriceObjects:
     type: object
     properties:
-      cards:
+      prices:
         type: array
         items:
           $ref: "#/definitions/PriceObject"
