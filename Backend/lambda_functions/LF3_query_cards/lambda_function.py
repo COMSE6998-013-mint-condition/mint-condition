@@ -172,7 +172,7 @@ def lambda_handler(event, context):
 
                 card = process_card_obj(cursor.fetchone())
                 
-            return real_response(process_card_obj(card))
+            return real_response(card)
 
         elif httpMethod == "DELETE":
 
