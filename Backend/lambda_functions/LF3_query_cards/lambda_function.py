@@ -41,7 +41,7 @@ def lambda_handler(event, context):
 
                 sql = """SELECT card_condition_name as condition_label, card_condition_descr as condition_desc, 
                 user_id as owner_name, c.card_id, CONCAT(%s, card_s3_key) as path, card_label as label,
-                max_price as max_value, min_price as min_value, `count`, mean_price as mean_value
+                max_price as max_value, min_price as min_value, `count`, mean_price as mean_value, timestmap
                 FROM cards c
                 LEFT JOIN card_conditions ON c.card_condition_id = card_conditions.card_condition_id
                 LEFT JOIN ebay_price_data eb ON eb.ebay_price_data_id = (
@@ -98,7 +98,7 @@ def lambda_handler(event, context):
                 
                 sql = """SELECT card_condition_name as condition_label, card_condition_descr as condition_desc, 
                 user_id as owner_name, c.card_id, CONCAT(%s, card_s3_key) as path, card_label as label,
-                max_price as max_value, min_price as min_value, `count`, mean_price as mean_value
+                max_price as max_value, min_price as min_value, `count`, mean_price as mean_value, timestmap
                 FROM cards c
                 LEFT JOIN card_conditions ON c.card_condition_id = card_conditions.card_condition_id
                 LEFT JOIN ebay_price_data eb ON eb.ebay_price_data_id = (
@@ -135,7 +135,7 @@ def lambda_handler(event, context):
                 if cursor.rowcount == 0:
                     return unexpected_error("card not found for user")
 
-                sql = """ SELECT max_price as max_value, min_price as min_value, count, mean_price as mean_value
+                sql = """ SELECT max_price as max_value, min_price as min_value, count, mean_price as mean_value, timestmap
                     FROM ebay_price_data
                     WHERE card_id = %s"""
                 cursor.execute(sql, (str(card_id),))
@@ -156,7 +156,7 @@ def lambda_handler(event, context):
 
                 sql = """SELECT card_condition_name as condition_label, card_condition_descr as condition_desc, 
                 user_id as owner_name, c.card_id, CONCAT(%s, card_s3_key) as path, card_label as label,
-                max_price as max_value, min_price as min_value, `count`, mean_price as mean_value
+                max_price as max_value, min_price as min_value, `count`, mean_price as mean_value, timestmap
                 FROM cards c
                 LEFT JOIN card_conditions ON c.card_condition_id = card_conditions.card_condition_id
                 LEFT JOIN ebay_price_data eb ON eb.ebay_price_data_id = (
@@ -187,7 +187,7 @@ def lambda_handler(event, context):
             with rdsConn.cursor() as cursor:
                 sql = """SELECT card_condition_name as condition_label, card_condition_descr as condition_desc, 
                 user_id as owner_name, c.card_id, CONCAT(%s, card_s3_key) as path, card_label as label,
-                max_price as max_value, min_price as min_value, `count`, mean_price as mean_value
+                max_price as max_value, min_price as min_value, `count`, mean_price as mean_value, timestmap
                 FROM cards c
                 LEFT JOIN card_conditions ON c.card_condition_id = card_conditions.card_condition_id
                 LEFT JOIN ebay_price_data eb ON eb.ebay_price_data_id = (
@@ -271,7 +271,7 @@ def lambda_handler(event, context):
         
             sql = f"""SELECT card_condition_name as condition_label, card_condition_descr as condition_desc, 
                 user_id as owner_name, c.card_id, CONCAT('{pathUrl}', card_s3_key) as path, card_label as label,
-                max_price as max_value, min_price as min_value, `count`, mean_price as mean_value
+                max_price as max_value, min_price as min_value, `count`, mean_price as mean_value, timestmap
                 FROM cards c
                 LEFT JOIN card_conditions ON c.card_condition_id = card_conditions.card_condition_id
                 LEFT JOIN ebay_price_data eb ON eb.ebay_price_data_id = (
@@ -324,7 +324,8 @@ def process_card_obj(card):
         "max_value": card['max_value'],
         "min_value": card['min_value'],
         "count": card['count'],
-        "mean_value": card['mean_value']
+        "mean_value": card['mean_value'],
+        "timestamp": card['timestmap']
     }
 
     card['price_object'] = priceObj
@@ -333,6 +334,7 @@ def process_card_obj(card):
     del card['min_value']
     del card['mean_value']
     del card['count']
+    del card['timestamp']
 
     return card
 
