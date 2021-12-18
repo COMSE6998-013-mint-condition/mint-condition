@@ -150,6 +150,7 @@ def lambda_handler(event, context):
             with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
                 result.extend(list(executor.map(search_ebay_helper, cards)))
             rds_insert(result)
+            # TODO(Gursifath): send notification to user if card value is out of range
         return {
             'statusCode': 200,
             'headers': {

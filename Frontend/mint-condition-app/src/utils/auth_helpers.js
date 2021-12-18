@@ -1,3 +1,4 @@
+import { elementAcceptingRef } from '@mui/utils';
 import axios from 'axios';
 
 // helper to check if we have an auth token either in query parameters or in storage. Redirect to log in if we don't
@@ -37,10 +38,20 @@ async function get_user_info() {
         'Authorization': token,
         'x-api-key': 'VQi4PffXXeaUzTIaEBnzUaGdnP6sPy9EUWtZSdp8'
     }
-    let response = null;
+    let response1 = null;
+    let response2 = null;
+    let total_val = null;
+    let total_cards = null;
     try{
-        response = await axios.get('https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/dev/user', {headers})
-        return response.data
+        response1 = await axios.get('https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/prod/user', {headers})
+        response2 = await axios.get('https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/prod/cards', {headers})
+        response2.data.cards.forEach(
+            (element) => {
+                total_cards += 1
+                total_val += element.price_object.mean_value
+            }
+        )
+        return [response1.data, total_cards, total_val]
     } catch (error) {
         // right now, failed auth returns a cors error because it doesn't have the cors header. If we had the cors header
         // we could properly parse the error for an auth error. For now, just log out. 
