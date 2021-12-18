@@ -11,8 +11,8 @@ import { get_user_info } from '../utils/auth_helpers';
 function Header(){
   const [username, setUsername] = useState('loading');
   get_user_info().then(response => {
-    if(username!==response['email']){
-      setUsername(response['email'])
+    if(username!==response[0]['email']){
+      setUsername(response[0]['email'])
     }
   });
   const navigate = useNavigate();

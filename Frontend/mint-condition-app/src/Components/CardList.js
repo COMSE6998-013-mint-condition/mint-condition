@@ -76,7 +76,7 @@ function CardList() {
       'Content-Type': 'image/jpeg',
       'X-Key': key,
       'x-amz-meta-customLabels': labels,
-      'x-amz-meta-user':user,
+      'x-amz-meta-user': user,
       'x-api-key': 'VQi4PffXXeaUzTIaEBnzUaGdnP6sPy9EUWtZSdp8'
     }
     axios.put(url, image, {headers}).then(response => console.log(response));

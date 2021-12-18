@@ -12,8 +12,8 @@ import { check_auth_code } from '../utils/auth_helpers';
 import {useLocation} from 'react-router-dom';
 
 
-function createData(name, related_cards, quality, requests, value, availability) {
-  return { name, related_cards, quality, requests, value, availability };
+function createData(name, max_val, quality, mean_val, quality_desc, min_val) {
+  return { name, max_val, quality, mean_val, quality_desc, min_val };
 }
 
 function Card(props){
@@ -22,12 +22,12 @@ function Card(props){
   const location = useLocation();
   let rows = []
   if(location.state && location.state.card) {
-    const card = location.state.card
+    const card = location.state.card;
     let card_name = card.path.substring(card.path.lastIndexOf('/')+1, card.path.length) //hack to get image name since we don't have label yet
-    rows = [createData(card_name, 'n/a', card.condition_label, 'n/a', 'n/a', 'n/a')];
+    rows = [createData(card_name, card.price_object.max_value, card.condition_label, card.price_object.mean_value, card.condition_desc, card.price_object.min_value)];
   } else {
     //this means we navigated to this page without a state (most likely typed in the url instead of clicking a card)
-    rows = [createData('n/a', 0, 'n/a', 0, 0, 'n/a')]
+    rows = [createData('n/a', 0, 'n/a', 0, 'n/a', 0)]
   }
   
   return (
@@ -44,27 +44,27 @@ function Card(props){
               <TableBody>
                 <TableRow>
                   <TableCell style={{ fontSize: 18}}><strong>Card Name</strong></TableCell>
-                  <TableCell style={{ fontSize: 18}}><strong>Number of Related Cards</strong></TableCell>
+                  <TableCell style={{ fontSize: 18}}><strong>Maximum Value of Card</strong></TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell style={{fontSize: 18}}>{rows[0].name}</TableCell>
-                  <TableCell style={{fontSize: 18}}>{rows[0].related_cards}</TableCell>
+                  <TableCell style={{fontSize: 18}}>{rows[0].max_val}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell style={{fontSize: 18}}><strong>Card Quality</strong></TableCell>
-                  <TableCell style={{fontSize: 18}}><strong>Buyer Requests</strong></TableCell>
+                  <TableCell style={{fontSize: 18}}><strong>Mean Value of Card</strong></TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell style={{fontSize: 18}}>{rows[0].quality}</TableCell>
-                  <TableCell style={{fontSize: 18}}>{rows[0].requests}</TableCell>
+                  <TableCell style={{fontSize: 18}}>{rows[0].mean_val}</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell style={{fontSize: 18}}><strong>Card Value</strong></TableCell>
-                  <TableCell style={{fontSize: 18}}><strong>Card Availability</strong></TableCell>
+                  <TableCell style={{fontSize: 18}}><strong>Description</strong></TableCell>
+                  <TableCell style={{fontSize: 18}}><strong>Minimum Value of Card</strong></TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell style={{fontSize: 18}}>{rows[0].value}</TableCell>
-                  <TableCell style={{fontSize: 18}}>{rows[0].availability}</TableCell>
+                  <TableCell style={{fontSize: 18}}>{rows[0].quality_desc}</TableCell>
+                  <TableCell style={{fontSize: 18}}>{rows[0].min_val}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
