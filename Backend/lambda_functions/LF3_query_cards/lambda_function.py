@@ -139,8 +139,8 @@ def lambda_handler(event, context):
                     prices = {"prices": []} if cursor.rowcount == 0 else {"prices": cursor.fetchall()}
 
                     return real_response(prices)
-        elif '/prices' in path:
-            if httpMethod == "GET":
+        elif '/analyze' in path:
+            if httpMethod == "POST":
 
                 if not 'id' in event['pathParameters']:
                     return unexpected_error("id not provided")
@@ -154,6 +154,8 @@ def lambda_handler(event, context):
                     # Invoke sagemaker
                     # Update DB with new condition
                     # Get the new card from the DB and return the card
+
+                return unexpected_error('not implemented')
 
         if httpMethod == "GET":
 

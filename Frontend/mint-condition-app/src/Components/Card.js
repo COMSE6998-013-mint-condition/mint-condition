@@ -53,8 +53,6 @@ function Card(props){
     }
   }, [])
 
-
-
   const deleteCard = (event) => {
     const url = 'https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/prod/card/' + cardId
     const headers = {
@@ -69,15 +67,15 @@ function Card(props){
 
   const reAnalyzeCard = (event) => {
     window.location.reload();
-    // const url = 'https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/prod/card/' + cardId + '/analyze'
-    // const headers = {
-    //   'Authorization': localStorage.getItem('id_token'),
-    //   'x-api-key': 'VQi4PffXXeaUzTIaEBnzUaGdnP6sPy9EUWtZSdp8'
-    // }
-    // console.log('reanalyzing card: ' + cardId)
-    // axios.post(url, {headers}).then((response) => {
-    //   window.location.reload();
-    // })
+    const url = 'https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/prod/card/' + cardId + '/analyze'
+    const headers = {
+      'Authorization': localStorage.getItem('id_token'),
+      'x-api-key': 'VQi4PffXXeaUzTIaEBnzUaGdnP6sPy9EUWtZSdp8'
+    }
+    console.log('reanalyzing card: ' + cardId)
+    axios.post(url, {headers}).then((response) => {
+      window.location.reload();
+    })
   }
   
   return (
