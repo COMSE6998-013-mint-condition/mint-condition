@@ -30,7 +30,7 @@ function CardList() {
   function getCards() {
     console.log('getting cards')
     // send get request
-    const url = 'https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/dev/cards'
+    const url = 'https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/prod/cards'
     const headers = {
       'Authorization': localStorage.getItem('id_token'),
       'x-api-key': 'VQi4PffXXeaUzTIaEBnzUaGdnP6sPy9EUWtZSdp8'
@@ -67,7 +67,7 @@ function CardList() {
     }
     
     // send upload request to apigateway
-    const url = 'https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/dev/upload'
+    const url = 'https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/prod/upload'
     const user = user_info['user_id']
     const labels = ''
     const key = image.name
@@ -81,12 +81,16 @@ function CardList() {
     }
     console.log("headers")
     console.log(headers)
-    axios.put(url, image, {headers}).then(response => console.log(response));
-    //TODO if fails, tell user
-
-    //get cards because we now have a new card, set timeout to 1 second to let the backend process the card
-    setTimeout(() => {getCards()}, 5);
-    // window.location.reload();
+    axios.put(url, image, {headers}).then((response) => {
+      console.log(response)
+      if(response.status === 200) {
+        //get cards because we now have a new card, set timeout to 1 second to let the backend process the card
+        setTimeout(() => {getCards()}, 5);
+        window.location.reload();
+      } else {
+        console.log('Upload failed')
+      }
+    });
   }
 
   return (

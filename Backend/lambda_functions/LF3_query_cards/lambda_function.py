@@ -446,6 +446,11 @@ def delete_card_os(user_id, card_id):
 def unexpected_error(error):
     return {
         'statusCode': 500,
+        'headers': {
+            'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Accept,x-amz-meta-customLabels',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS,PUT,GET,POST,DELETE'
+        },
         'body': error
     }
 
@@ -453,6 +458,11 @@ def unexpected_error(error):
 def raise_method_not_allowed():
     return {
         'statusCode': 405,
+        'headers': {
+            'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,Accept,x-amz-meta-customLabels',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS,PUT,GET,POST,DELETE'
+        },
         'body': "Method not allowed"
     }
 

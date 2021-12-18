@@ -43,8 +43,8 @@ async function get_user_info() {
     let total_val = null;
     let total_cards = null;
     try{
-        response1 = await axios.get('https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/dev/user', {headers})
-        response2 = await axios.get('https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/dev/cards', {headers})
+        response1 = await axios.get('https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/prod/user', {headers})
+        response2 = await axios.get('https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/prod/cards', {headers})
         response2.data.cards.forEach(
             (element) => {
                 total_cards += 1
