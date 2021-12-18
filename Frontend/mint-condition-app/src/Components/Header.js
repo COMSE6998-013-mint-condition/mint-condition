@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import {Box, Container, Typography} from '@material-ui/core';
@@ -7,9 +7,12 @@ import { useNavigate } from "react-router-dom";
 import {Link} from "react-router-dom"
 import { clear_auth_code } from '../utils/auth_helpers';
 import { get_user_info } from '../utils/auth_helpers';
+import SearchBar from "./SearchBar";
+import axios from "axios";
 
-function Header(){
+function Header({setCards}){
   const [username, setUsername] = useState('loading');
+
   get_user_info().then(response => {
     if(username!==response[0]['email']){
       setUsername(response[0]['email'])
@@ -21,6 +24,25 @@ function Header(){
     navigate('/');
   }
 
+      // get a list of user cards and set state of images to be the list of images
+  function getCards() {
+    console.log('getting cards')
+    // send get request
+    const url = 'https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/prod/cards'
+    const headers = {
+      'Authorization': localStorage.getItem('id_token'),
+      'x-api-key': 'VQi4PffXXeaUzTIaEBnzUaGdnP6sPy9EUWtZSdp8'
+    }
+    axios.get(url, {headers}).then(response => {
+      console.log(response)
+      setCards(response.data.cards)
+    });
+  }
+
+  useEffect(() => {
+      getCards()
+  }, [])
+
   return (
       <Container maxWidth='lg'>
         <Grid container
@@ -29,21 +51,16 @@ function Header(){
               direction='row'
               justifyContent='space-evenly'
               alignItems='center'
-              // style={{backgroundColor:'yellow'}}
         >
             <Grid container item
                   direction='column'
                   alignItems='flex-end'
                   style={{marginRight:50, marginTop: 50}}
             >
-                <Link to="/User"
-                      // style={{position: 'absolute',right: 70, top: 50, fontSize:30}}
-                >
+                <Link to="/User">
                     {username}
                 </Link>
-                <Button onClick={onSignOut}
-                    // style={{height:70, width: 200, fontSize: 30, color: 'green', position: 'absolute', right: 50,top: 100,}}
-                >
+                <Button onClick={onSignOut}>
                     Sign Out
                 </Button>
           </Grid>
@@ -54,7 +71,6 @@ function Header(){
             >
                 <Typography variant="h3"
                             onClick={()=> navigate('/homepage')}
-                            // style={{cursor:'pointer', position: 'absolute',left: 50, top: 70,}}
                 >
                     Mint Condition
                 </Typography>
@@ -62,13 +78,13 @@ function Header(){
                      onClick={()=> navigate('/homepage')}
                      alt='pikachu'
                      style={{height:120, width:120, marginLeft:10}}
-                     // style={{cursor:'pointer', height:120, width: 120, position: 'absolute', left: 365}}
                 />
+            </Grid>
+            <Grid container item justifyContent='center'>
+                <SearchBar setPhotos={setCards} />
             </Grid>
         </Grid>
       </Container>
-      // TODO:
-      // change username to logged in user, route sign out button
   )
 }
 

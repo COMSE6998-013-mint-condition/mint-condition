@@ -12,25 +12,6 @@ function HomePage(props){
 
   const [cards, setCards] = useState()
 
-    // get a list of user cards and set state of images to be the list of images
-  function getCards() {
-    console.log('getting cards')
-    // send get request
-    const url = 'https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/prod/cards'
-    const headers = {
-      'Authorization': localStorage.getItem('id_token'),
-      'x-api-key': 'VQi4PffXXeaUzTIaEBnzUaGdnP6sPy9EUWtZSdp8'
-    }
-    axios.get(url, {headers}).then(response => {
-      console.log(response)
-      setCards(response.data.cards)
-    });
-  }
-
-  useEffect(() => {
-      getCards()
-  }, [])
-
   return (
       <Container>
           <Grid container
@@ -40,10 +21,7 @@ function HomePage(props){
           justifyContent='center'
     >
         <Grid item>
-            <Header/>
-        </Grid>
-        <Grid container item justifyContent='center'>
-            <SearchBar setPhotos={setCards} />
+            <Header setCards={setCards}/>
         </Grid>
         <Grid container item>
             <CardList cards={cards}/>

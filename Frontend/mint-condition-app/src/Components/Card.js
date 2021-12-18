@@ -24,6 +24,7 @@ function Card(props){
 
   const navigate = useNavigate()
   const location = useLocation();
+  const [cards, setCards] = useState()
 
   let cardId = ''
   if(location.state && location.state.card) {
@@ -106,7 +107,7 @@ function Card(props){
 
   return (
       <Container>
-        <Header/>
+        <Header setCards={setCards}/>
         <Grid style={{flex: 1}}>
           <TableContainer>
             <Table style={{background:'#D4F1F4'}} sx={{marginTop: 16, minWidth: 600, minHeight:400 }} aria-label="simple table">
@@ -163,7 +164,7 @@ function Card(props){
             </Table>
           </TableContainer>
           </Grid>
-          <CardList cards={location.state.cards}/>
+          <CardList cards={cards}/>
       </Container>
   )
 }

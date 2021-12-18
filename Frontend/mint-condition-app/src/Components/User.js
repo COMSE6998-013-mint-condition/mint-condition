@@ -18,8 +18,6 @@ function createData(name, num_cards, purpose, total_val) {
   return { name, num_cards, purpose, total_val};
 }
 
-// const rows = [createData('Arthur Pikachu', 159, 'Seller', 24, '******', 500)];
-
 function User(){
   check_auth_code();
   let user_email = null
@@ -64,7 +62,6 @@ function User(){
           </Table>
         </TableContainer>
         </Grid>
-        <CardList/>
       </Container>
   )
 }

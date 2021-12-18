@@ -78,7 +78,7 @@ function CardList(props) {
                           dropzoneText={"Upload a Card"}/>
           </Grid>
           <Grid item>
-            <ImageList cols={4} rowHeight={300} gap={4} style={{flexGrow:1, backgroundColor:'red'}}>
+            <ImageList cols={4} rowHeight={300} gap={4}>
               {
                 props.cards?.map((card) => (
                   <ImageListItem key={card.path}>
