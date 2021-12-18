@@ -1,5 +1,5 @@
 import Grid from '@material-ui/core/Grid';
-import { Container } from '@material-ui/core';
+import {Box, Container} from '@material-ui/core';
 import Header from './Header'
 import CardList from './CardList'
 import Table from '@mui/material/Table';
@@ -105,7 +105,7 @@ function Card(props){
   }
 
   return (
-      <Container maxWidth='md' style={{marginTop : 22}}>
+      <Container>
         <Header/>
         <Grid style={{flex: 1}}>
           <TableContainer>

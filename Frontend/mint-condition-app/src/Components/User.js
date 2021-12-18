@@ -33,7 +33,7 @@ function User(){
   })
 
   return (
-      <Container maxWidth='md' style={{marginTop : 22}}>
+      <Container>
         <Header/>
         <Grid style={{flex: 1}}>
           <TableContainer>

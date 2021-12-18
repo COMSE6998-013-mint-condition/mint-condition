@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import Grid from '@material-ui/core/Grid';
-import { Container, makeStyles, Typography } from '@material-ui/core';
+import {Box, Container, makeStyles, Typography} from '@material-ui/core';
 import {DropzoneArea} from 'material-ui-dropzone'
 import { get_user_info } from '../utils/auth_helpers';
 import axios from 'axios';
@@ -10,8 +10,7 @@ import {ImageList, ImageListItem} from "@material-ui/core";
 
 const useStyles = makeStyles({
   smDropzone: {
-    height: 200,
-    width: 200,
+    fullWidth: 'true',
   },
 });
 
@@ -58,8 +57,6 @@ function CardList(props) {
     axios.put(url, image, {headers}).then((response) => {
       console.log(response)
       if(response.status === 200) {
-        //get cards because we now have a new card, set timeout to 1 second to let the backend process the card
-        // setTimeout(() => {getCards()}, 5);
         window.location.reload();
       } else {
         console.log('Upload failed')
@@ -68,8 +65,11 @@ function CardList(props) {
   }
 
   return (
-      <Container maxWidth='md' style={{marginTop : 40, flexGrow:1}} >
-        <Grid container direction="row" spacing={2} style={{ flexGrow: 1, backgroundColor: 'red'}}>
+      <Box maxWidth='xl' style={{marginTop : 40, flexGrow:1}} >
+        <Grid container
+              direction="row"
+              spacing={2}
+              style={{ margin:10}}>
           <Grid item>
             <DropzoneArea filesLimit={1}
                           onChange={uploadCard}
@@ -78,10 +78,7 @@ function CardList(props) {
                           dropzoneText={"Upload a Card"}/>
           </Grid>
           <Grid item>
-            <Typography variant="h5" style={{ }}>Uploaded Cards</Typography>
-          </Grid>
-          <Grid item>
-            <ImageList>
+            <ImageList cols={4} rowHeight={300} gap={4} style={{flexGrow:1, backgroundColor:'red'}}>
               {
                 props.cards?.map((card) => (
                   <ImageListItem key={card.path}>
@@ -91,6 +88,7 @@ function CardList(props) {
                          alt={card.path}
                          onClick={() => {
                             navigate('/card', {state: {'card':card, 'cards':props.cards}})
+                            window.location.reload()
                          }}
                     />
                   </ImageListItem>
@@ -99,7 +97,7 @@ function CardList(props) {
             </ImageList>
           </Grid>
         </Grid>
-      </Container>
+      </Box>
   )
 }
 

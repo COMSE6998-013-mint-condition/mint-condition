@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import { Container, Typography } from '@material-ui/core';
+import {Box, Container, Typography} from '@material-ui/core';
 import pikachu from '../assets/pikachu.jpg'
 import { useNavigate } from "react-router-dom";
 import {Link} from "react-router-dom"
@@ -22,18 +22,49 @@ function Header(){
   }
 
   return (
-      <Container maxWidth='md' style={{marginTop : 22}} >
-        <Grid container spacing={2}   >
-            <Grid item xs={12}>
-                <Typography variant="h3" onClick={()=> navigate('/homepage')} style={{cursor:'pointer', position: 'absolute',left: 50, top: 70,}}>Mint Condition</Typography>
-                <img src={pikachu} onClick={()=> navigate('/homepage')} alt='pikachu' style={{cursor:'pointer', height:120, width: 120, position: 'absolute', left: 365}}/>
-                <Link to="/User" style={{position: 'absolute',right: 70, top: 50, fontSize:30}}>{username}</Link>
-            </Grid>
-        </Grid>
-        <Grid container spacing={2}  >
-          <Grid item xs={12}>
-            <Button onClick={onSignOut} style={{height:70, width: 200, fontSize: 30, color: 'green', position: 'absolute', right: 50,top: 100,}}>Sign Out</Button>
+      <Container maxWidth='lg'>
+        <Grid container
+              item
+              spacing={2}
+              direction='row'
+              justifyContent='space-evenly'
+              alignItems='center'
+              // style={{backgroundColor:'yellow'}}
+        >
+            <Grid container item
+                  direction='column'
+                  alignItems='flex-end'
+                  style={{marginRight:50, marginTop: 50}}
+            >
+                <Link to="/User"
+                      // style={{position: 'absolute',right: 70, top: 50, fontSize:30}}
+                >
+                    {username}
+                </Link>
+                <Button onClick={onSignOut}
+                    // style={{height:70, width: 200, fontSize: 30, color: 'green', position: 'absolute', right: 50,top: 100,}}
+                >
+                    Sign Out
+                </Button>
           </Grid>
+            <Grid container item
+                  direction='row'
+                  alignItems='center'
+                  style={{marginLeft:50, }}
+            >
+                <Typography variant="h3"
+                            onClick={()=> navigate('/homepage')}
+                            // style={{cursor:'pointer', position: 'absolute',left: 50, top: 70,}}
+                >
+                    Mint Condition
+                </Typography>
+                <img src={pikachu}
+                     onClick={()=> navigate('/homepage')}
+                     alt='pikachu'
+                     style={{height:120, width:120, marginLeft:10}}
+                     // style={{cursor:'pointer', height:120, width: 120, position: 'absolute', left: 365}}
+                />
+            </Grid>
         </Grid>
       </Container>
       // TODO:

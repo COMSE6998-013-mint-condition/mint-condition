@@ -57,7 +57,7 @@ export default function SearchBar(props) {
     >
       <InputBase
         sx={{ ml: 1, flex: 1 }}
-        placeholder="Search Photos"
+        placeholder="Search Cards"
         inputProps={{ 'aria-label': 'search photos' }}
         onKeyUp={(event) => { if(event.keyCode === 13) { handleSearch() } }} 
         onChange={(event) => {setSearch(event.target.value)}}
