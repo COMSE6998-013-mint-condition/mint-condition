@@ -1,10 +1,11 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Container, makeStyles, Typography } from '@material-ui/core';
 import {DropzoneArea} from 'material-ui-dropzone'
 import { get_user_info } from '../utils/auth_helpers';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import {ImageList, ImageListItem} from "@material-ui/core";
 
 
 const useStyles = makeStyles({
@@ -14,42 +15,15 @@ const useStyles = makeStyles({
   },
 });
 
-function CardList() {
+function CardList(props) {
   const classes = useStyles();
-  const [images, setImages] = useState([]);
   const navigate = useNavigate();
 
   // get user info, then set user info, then get cards
   let user_info = null
   get_user_info().then(response => {
     user_info = response[0];
-    getCards();
   });
-
-  // get a list of user cards and set state of images to be the list of images
-  function getCards() {
-    console.log('getting cards')
-    // send get request
-    const url = 'https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/prod/cards'
-    const headers = {
-      'Authorization': localStorage.getItem('id_token'),
-      'x-api-key': 'VQi4PffXXeaUzTIaEBnzUaGdnP6sPy9EUWtZSdp8'
-    }
-    axios.get(url, {headers}).then(response => {
-      console.log(response)
-      let cards = response.data.cards;
-      let images_html = cards.map(card => {
-        let card_name = card.path.substring(card.path.lastIndexOf('/')+1, card.path.length) //hack to get image name since we don't have label yet
-        return <img style={{width:250, height:350, margin:20}} key={card_name} src={card.path} alt={card_name} onClick={() => {
-          navigate('/card', {state: {'card':card}})}
-        }/>
-      });
-      // only update if the list has changed, otherwise we recurse forever because we call get_user_info again
-      if (images_html.length !== images.length) {
-        setImages(images_html)
-      }
-    });
-  }
 
   //function is called when card is added to dropzone area
   function uploadCard(files){
@@ -85,7 +59,7 @@ function CardList() {
       console.log(response)
       if(response.status === 200) {
         //get cards because we now have a new card, set timeout to 1 second to let the backend process the card
-        setTimeout(() => {getCards()}, 5);
+        // setTimeout(() => {getCards()}, 5);
         window.location.reload();
       } else {
         console.log('Upload failed')
@@ -94,16 +68,38 @@ function CardList() {
   }
 
   return (
-      <Container maxWidth='md' style={{marginTop : 40}} >
-        <Typography variant="h5" style={{ }}>Uploaded Cards</Typography>
-        <br></br>
-        <Grid style={{ }}>
-          <DropzoneArea filesLimit={1} onChange={uploadCard} acceptedFiles={['image/*']} classes={{root: classes.smDropzone}} dropzoneText={"Upload a Card"}/>
-          {images}
+      <Container maxWidth='md' style={{marginTop : 40, flexGrow:1}} >
+        <Grid container direction="row" spacing={2} style={{ flexGrow: 1, backgroundColor: 'red'}}>
+          <Grid item>
+            <DropzoneArea filesLimit={1}
+                          onChange={uploadCard}
+                          acceptedFiles={['image/*']}
+                          classes={{root: classes.smDropzone}}
+                          dropzoneText={"Upload a Card"}/>
+          </Grid>
+          <Grid item>
+            <Typography variant="h5" style={{ }}>Uploaded Cards</Typography>
+          </Grid>
+          <Grid item>
+            <ImageList>
+              {
+                props.cards?.map((card) => (
+                  <ImageListItem key={card.path}>
+                    <img
+                         key={card.path}
+                         src={card.path}
+                         alt={card.path}
+                         onClick={() => {
+                            navigate('/card', {state: {'card':card, 'cards':props.cards}})
+                         }}
+                    />
+                  </ImageListItem>
+                ))
+              }
+            </ImageList>
+          </Grid>
         </Grid>
       </Container>
-      // TODO:
-      // Add images before the dropzonearea using imagelist
   )
 }
 

@@ -13,7 +13,7 @@ import {useLocation, useNavigate} from 'react-router-dom';
 import {Button} from "@mui/material";
 import axios from "axios";
 import {useEffect, useState} from "react";
-
+import getCards from "./HomePage"
 
 function createData(name, max_val, quality, mean_val, quality_desc, min_val, label) {
   return { name, max_val, quality, mean_val, quality_desc, min_val, label };
@@ -163,7 +163,7 @@ function Card(props){
             </Table>
           </TableContainer>
           </Grid>
-          <CardList/>
+          <CardList cards={location.state.cards}/>
       </Container>
   )
 }
