@@ -15,8 +15,8 @@ import axios from "axios";
 import {useEffect, useState} from "react";
 
 
-function createData(name, max_val, quality, mean_val, quality_desc, min_val) {
-  return { name, max_val, quality, mean_val, quality_desc, min_val };
+function createData(name, max_val, quality, mean_val, quality_desc, min_val, label) {
+  return { name, max_val, quality, mean_val, quality_desc, min_val, label };
 }
 
 function Card(props){
@@ -43,7 +43,12 @@ function Card(props){
       axios.get(url, {headers}).then((response) => {
         if(response.status === 200) {
           let card_name = response.data.path.substring(response.data.path.lastIndexOf('/')+1, response.data.path.length)
-          setRows([createData(card_name, response.data.price_object.max_value, response.data.condition_label,  response.data.price_object.mean_value, response.data.condition_desc, response.data.price_object.min_value)])
+          setRows([createData(card_name, response.data.price_object.max_value,
+                                               response.data.condition_label,
+                                               response.data.price_object.mean_value,
+                                               response.data.condition_desc,
+                                               response.data.price_object.min_value,
+                                               response.data.label)])
         }
       })
     }
@@ -77,7 +82,28 @@ function Card(props){
       }
     })
   }
-  
+
+  const updateCard = (event) => {
+    const url = 'https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/prod/card'
+    const headers = {
+      'Authorization': localStorage.getItem('id_token'),
+      'x-api-key': 'VQi4PffXXeaUzTIaEBnzUaGdnP6sPy9EUWtZSdp8'
+    }
+    const body = {
+      'id': cardId,
+      'label': 'add_label_here'
+    }
+    console.log('updating card: ' + cardId)
+    axios.post(url, body,{headers}).then((response) => {
+      if(response.status === 200)
+      {
+        window.location.reload()
+      } else {
+        console.log('error: ' + response.statusText)
+      }
+    })
+  }
+
   return (
       <Container maxWidth='md' style={{marginTop : 22}}>
         <Header/>
@@ -115,8 +141,14 @@ function Card(props){
                   <TableCell style={{fontSize: 18}}>{rows[0].min_val}</TableCell>
                 </TableRow>
                 <TableRow>
+                  <TableCell style={{fontSize: 18}}><strong>Labels</strong></TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell style={{fontSize: 18}}>{rows[0].label}</TableCell>
+                </TableRow>
+                <TableRow>
                   <TableCell style={{fontSize: 18}}>
-                    <Button variant="contained" style={{margin:5}}>
+                    <Button variant="contained" style={{margin:5}} onClick={updateCard}>
                       Update
                     </Button>
                     <Button variant="contained" style={{margin:5}} onClick={reAnalyzeCard}>
@@ -126,12 +158,6 @@ function Card(props){
                       Delete
                     </Button>
                   </TableCell>
-                  <TableCell style={{fontSize: 18}}>
-
-                  </TableCell>
-                  <TableCell style={{fontSize: 18}}>
-
-                  </TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -139,8 +165,6 @@ function Card(props){
           </Grid>
           <CardList/>
       </Container>
-      // TODO:
-      // Fetch info from api
   )
 }
 
