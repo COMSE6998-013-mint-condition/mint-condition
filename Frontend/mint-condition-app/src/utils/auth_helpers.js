@@ -51,8 +51,6 @@ async function get_user_info() {
                 total_val += element.price_object.mean_value
             }
         )
-        console.log("total_val")
-        console.log(total_val)
         return [response1.data, total_cards, total_val]
     } catch (error) {
         // right now, failed auth returns a cors error because it doesn't have the cors header. If we had the cors header

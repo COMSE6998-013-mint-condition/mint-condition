@@ -22,7 +22,7 @@ function CardList() {
   // get user info, then set user info, then get cards
   let user_info = null
   get_user_info().then(response => {
-    user_info = response;
+    user_info = response[0];
     getCards();
   });
 
@@ -79,12 +79,14 @@ function CardList() {
       'x-amz-meta-user': user,
       'x-api-key': 'VQi4PffXXeaUzTIaEBnzUaGdnP6sPy9EUWtZSdp8'
     }
+    console.log("headers")
+    console.log(headers)
     axios.put(url, image, {headers}).then(response => console.log(response));
     //TODO if fails, tell user
 
     //get cards because we now have a new card, set timeout to 1 second to let the backend process the card
-    setTimeout(() => {getCards()}, 1);
-    window.location.reload();
+    setTimeout(() => {getCards()}, 5);
+    // window.location.reload();
   }
 
   return (
