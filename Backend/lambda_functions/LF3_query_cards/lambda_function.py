@@ -139,6 +139,21 @@ def lambda_handler(event, context):
                     prices = {"prices": []} if cursor.rowcount == 0 else {"prices": cursor.fetchall()}
 
                     return real_response(prices)
+        elif '/prices' in path:
+            if httpMethod == "GET":
+
+                if not 'id' in event['pathParameters']:
+                    return unexpected_error("id not provided")
+
+                card_id = event['pathParameters']['id']
+
+                with rdsConn.cursor() as cursor:
+                    pass
+                    # TODO (Gursifath): Implement reanalyzing the card in Sagemaker and return the updated card object
+                    # Using card id, check the DB and download your image with s3
+                    # Invoke sagemaker
+                    # Update DB with new condition
+                    # Get the new card from the DB and return the card
 
         if httpMethod == "GET":
 
