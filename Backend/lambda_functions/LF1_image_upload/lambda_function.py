@@ -54,9 +54,6 @@ def lambda_handler(event, context):
 
     condition_name = rds_update_condition(rdsConn, card_id, condition)
 
-    if(condition_name == False)
-
-
     split_labels = [l.strip() for l in label.split(',')]
     upload_to_opensearch(card_id=card_id, user_id=user_id, created_timestmap=time_created, labels=split_labels, condition=condition_name)
     
