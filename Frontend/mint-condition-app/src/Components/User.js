@@ -32,7 +32,7 @@ function User(){
 
   return (
       <Container>
-        <Header/>
+        <Header setCards={{}}/>
         <Grid style={{flex: 1}}>
           <TableContainer>
           <Table style={{background:'#D4F1F4'}} sx={{ marginTop: 16, minWidth: 600, minHeight:400 }} aria-label="simple table">
