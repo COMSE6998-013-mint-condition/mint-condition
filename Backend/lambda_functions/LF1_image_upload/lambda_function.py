@@ -42,7 +42,6 @@ def lambda_handler(event, context):
     label = s3_data['ResponseMetadata']['HTTPHeaders']['x-amz-meta-customlabels'] if 'x-amz-meta-customlabels' in s3_data['ResponseMetadata']['HTTPHeaders'] else ""
     time_created = s3_data['LastModified'].strftime("%Y-%m-%dT%H:%M:%S.%fZ") #convert to a time.struct_time object -> will store as a unix timestamp
     user_id = s3_data['ResponseMetadata']['HTTPHeaders']['x-amz-meta-user']
-    # user_id = "google_101390119411965147253"
     
     card_id = rds_insert(rdsConn, user_id, label, time_created, bucket, key)
 
@@ -51,7 +50,6 @@ def lambda_handler(event, context):
     if ebay_data:
         rds_insert_ebay(rdsConn, ebay_data)
 
-    #TODO make sure condition is a float value
     condition = invoke_sagemaker(bucket, key) 
 
     condition_name = rds_update_condition(rdsConn, card_id, condition)
@@ -68,7 +66,6 @@ def lambda_handler(event, context):
 def invoke_sagemaker(bucket, key):
     return 2.0
 
-
 def rds_insert(conn, user_id, label, time_created, bucket, key):
     with conn.cursor() as cursor:
         sql = "INSERT INTO `cards` (`card_label`, `card_bucket`, `card_s3_key`, `user_id`, `time_created`) VALUES (%s, %s, %s, %s, %s)"
@@ -82,12 +79,11 @@ def rds_update_condition(conn, card_id, condition):
 
     #TODO implement failure handling - what if nothing is retrieved
     with conn.cursor() as cursor:
-        sql = "SELECT `card_condition_id`, `card_condition_name` FROM `card_conditions` WHERE `card_condition_rating` = %s"
-        cursor.execute(sql, (condition,))
+        sql = "SELECT `card_condition_id`, `card_condition_name` FROM `card_conditions` WHERE `card_condition_ml_label` = %s"
+        cursor.execute(sql, (str(condition),))
         result = cursor.fetchone()
         condition_id = result['card_condition_id']
         card_condition_name = result['card_condition_name']
-        
         
     with conn.cursor() as cursor:
         sql = "UPDATE `cards` SET `card_condition_id` = %s WHERE `card_id` = %s"

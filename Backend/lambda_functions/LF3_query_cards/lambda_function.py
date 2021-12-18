@@ -136,9 +136,10 @@ def lambda_handler(event, context):
                         WHERE card_id = %s"""
                     cursor.execute(sql, (str(card_id),))
 
-                    prices = {"prices": []} if cursor.rowcount == 0 else {"prices": cursor.fetchall()}
+                    prices = { "prices" : [] } if cursor.rowcount == 0 else { "prices": cursor.fetchall() }
 
                     return real_response(prices)
+
         elif '/analyze' in path:
             if httpMethod == "POST":
 
