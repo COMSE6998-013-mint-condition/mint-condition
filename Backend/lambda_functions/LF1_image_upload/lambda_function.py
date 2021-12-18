@@ -64,7 +64,7 @@ def lambda_handler(event, context):
 
 # TODO
 def invoke_sagemaker(bucket, key):
-    return 2.0
+    return 'GOOD'
 
 def rds_insert(conn, user_id, label, time_created, bucket, key):
     with conn.cursor() as cursor:

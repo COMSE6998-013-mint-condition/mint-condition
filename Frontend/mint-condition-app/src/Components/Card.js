@@ -12,7 +12,7 @@ import { check_auth_code } from '../utils/auth_helpers';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {Button} from "@mui/material";
 import axios from "axios";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import getCards from "./HomePage"
 
 function createData(name, max_val, quality, mean_val, quality_desc, min_val, label) {
@@ -108,7 +108,7 @@ function Card(props){
   return (
       <Container>
         <Header setCards={setCards}/>
-        <Grid style={{flex: 1}}>
+        <Grid container direction='row' style={{flex: 1, marginTop:10}}>
           <TableContainer>
             <Table style={{background:'#D4F1F4'}} sx={{marginTop: 16, minWidth: 600, minHeight:400 }} aria-label="simple table">
               <TableHead>
@@ -122,7 +122,13 @@ function Card(props){
                   <TableCell style={{ fontSize: 18}}><strong>Maximum Value of Card</strong></TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell style={{fontSize: 18}}>{rows[0].name}</TableCell>
+                  <TableCell style={{fontSize: 18}}>
+                    <img key={location.state.card.path}
+                         src={location.state.card.path}
+                         alt={location.state.card.path}
+                         width={50} />
+                    {rows[0].name}
+                  </TableCell>
                   <TableCell style={{fontSize: 18}}>{rows[0].max_val}</TableCell>
                 </TableRow>
                 <TableRow>
@@ -163,8 +169,8 @@ function Card(props){
               </TableBody>
             </Table>
           </TableContainer>
-          </Grid>
-          <CardList cards={cards}/>
+        </Grid>
+        <CardList cards={cards}/>
       </Container>
   )
 }

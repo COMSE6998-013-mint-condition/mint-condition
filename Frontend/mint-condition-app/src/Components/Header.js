@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import {Container, Typography} from '@material-ui/core';
@@ -9,20 +9,65 @@ import { clear_auth_code } from '../utils/auth_helpers';
 import { get_user_info } from '../utils/auth_helpers';
 import SearchBar from "./SearchBar";
 import axios from "axios";
+import {IconButton} from "@mui/material";
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 
 function Header({setCards}){
   const [username, setUsername] = useState('loading');
+  const inputFile = useRef(null)
+  const [selectedPhoto, setSelectedPhoto] = useState([]);
+  const [userInfo, setUserInfo] = useState();
 
-  get_user_info().then(response => {
-    if(username!==response[0]['email']){
-      setUsername(response[0]['email'])
-    }
-  });
   const navigate = useNavigate();
   const onSignOut = () =>{
     clear_auth_code();
     navigate('/');
   }
+
+  const onChangeFile = (event) => {
+    setSelectedPhoto(event.target.files);
+  }
+
+  useEffect(() => {
+    // get user info, then set user info, then get cards
+    get_user_info().then(response => {
+        setUserInfo(response[0]);
+    });
+  }, [])
+
+  useEffect(() => {
+    // if user info hasn't been retrieved yet, set a 1 second timeout and try again. dangerous cuz this recurses forever...
+    if (!userInfo) {
+      console.log('no user info yet...')
+      return 0;
+    }
+    if(selectedPhoto !== null) {
+        const url = 'https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/prod/upload'
+        const user = userInfo['user_id']
+        const labels = ''
+        const key = selectedPhoto[0].name
+        console.log(localStorage.getItem('id_token'))
+
+        let config = {
+            'Authorization': localStorage.getItem('id_token'),
+            "Content-Type": 'image/jpeg',
+            "X-Key": key,
+            'x-amz-meta-customLabels': labels,
+            'x-amz-meta-user': user,
+            'x-api-key': 'VQi4PffXXeaUzTIaEBnzUaGdnP6sPy9EUWtZSdp8'
+        }
+        axios.put(url, selectedPhoto[0], {config}).then((response) => {
+            console.log(response)
+            setSelectedPhoto(null)
+            if(response.status === 200) {
+                // window.location.reload();
+                console.log('hi')
+            } else {
+                console.log('Upload failed')
+            }
+        })
+    }
+  }, [selectedPhoto])
 
       // get a list of user cards and set state of images to be the list of images
   function getCards() {
@@ -86,6 +131,18 @@ function Header({setCards}){
             {setCards && typeof setCards === 'function' &&
                 <Grid container item justifyContent='center'>
                     <SearchBar setPhotos={setCards} />
+                    <input id="file"
+                           type="file"
+                           ref={inputFile}
+                           onChange={onChangeFile.bind(this)}
+                           style={{ display: 'none' }}
+                    />
+                   <IconButton color="primary"
+                               aria-label="upload picture"
+                               component="span"
+                               onClick={() => inputFile.current.click()}>
+                    <UploadFileIcon />
+                   </IconButton>
                 </Grid>
             }
         </Grid>
