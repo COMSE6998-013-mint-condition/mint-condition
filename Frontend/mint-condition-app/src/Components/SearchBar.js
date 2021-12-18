@@ -18,15 +18,25 @@ export default function SearchBar(props) {
 
       const url = 'https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/prod/search'
   
+      const search_params = search.split(",");
       let config = {
         params: {
-          label: search
         },
         headers: {
           'Authorization': localStorage.getItem('id_token'),
           'x-api-key': 'VQi4PffXXeaUzTIaEBnzUaGdnP6sPy9EUWtZSdp8'
         }
       }
+
+      console.log(search_params)
+
+      if(search_params[0] !== ""){
+        config.params['label'] = search_params[0]
+      }
+      if(search_params.length > 1 && search_params[1] !== "") {
+        config.params['condition'] = search_params[1]
+      }
+
       axios.get(url, config).then((response) =>  {
           props.setPhotos(response.data['cards'])
       })
@@ -38,6 +48,7 @@ export default function SearchBar(props) {
       }
       axios.get(url, {headers}).then(response => {
         props.setPhotos(response.data['cards'])
+        setText("")
       });
     }
   }

@@ -25,7 +25,7 @@ function Header({setCards}){
   }
 
   const onChangeFile = (event) => {
-    setSelectedPhoto(event.target.files);
+    setSelectedPhoto(event.target.files[0]);
   }
 
   useEffect(() => {
@@ -34,6 +34,13 @@ function Header({setCards}){
         setUserInfo(response[0]);
     });
   }, [])
+
+  useEffect(() => {
+    if(userInfo){
+        setUsername(userInfo['email']);
+    }
+
+  }, [userInfo])
 
   useEffect(() => {
     // if user info hasn't been retrieved yet, set a 1 second timeout and try again. dangerous cuz this recurses forever...
@@ -45,10 +52,10 @@ function Header({setCards}){
         const url = 'https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/prod/upload'
         const user = userInfo['user_id']
         const labels = ''
-        const key = selectedPhoto[0].name
+        const key = selectedPhoto.name
         console.log(localStorage.getItem('id_token'))
 
-        let config = {
+        let headers = {
             'Authorization': localStorage.getItem('id_token'),
             "Content-Type": 'image/jpeg',
             "X-Key": key,
@@ -56,12 +63,11 @@ function Header({setCards}){
             'x-amz-meta-user': user,
             'x-api-key': 'VQi4PffXXeaUzTIaEBnzUaGdnP6sPy9EUWtZSdp8'
         }
-        axios.put(url, selectedPhoto[0], {config}).then((response) => {
+        axios.put(url, selectedPhoto, {headers}).then((response) => {
             console.log(response)
             setSelectedPhoto(null)
             if(response.status === 200) {
-                // window.location.reload();
-                console.log('hi')
+                setTimeout(function(){ window.location.reload(); }, 2000);
             } else {
                 console.log('Upload failed')
             }
