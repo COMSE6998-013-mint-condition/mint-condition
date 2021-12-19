@@ -1,8 +1,9 @@
 import json
-import pymysql
-import boto3
-import urllib3
 import os
+
+import boto3
+import pymysql
+import urllib3
 
 s3 = boto3.client('s3')
 
@@ -147,16 +148,45 @@ def lambda_handler(event, context):
                     return unexpected_error("id not provided")
 
                 card_id = event['pathParameters']['id']
+                og_card_data = {}
 
                 with rdsConn.cursor() as cursor:
-                    pass
-                    # TODO (Gursifath): Implement reanalyzing the card in Sagemaker and return the updated card object
-                    # Using card id, check the DB and download your image with s3
-                    # Invoke sagemaker
-                    # Update DB with new condition
-                    # Get the new card from the DB and return the card
+                    sql = """SELECT *
+                             FROM cards
+                             WHERE cards.user_id = %s
+                             AND cards.card_id = %s"""
 
-                return unexpected_error('not implemented')
+                    cursor.execute(sql, (str(user_id), str(card_id),))
+                    if cursor.rowcount == 0:
+                        return unexpected_error("card not found for user")
+                    og_card_data = cursor.fetchone()
+
+                print(og_card_data)
+                condition_label = invoke_sagemaker(og_card_data['card_bucket'], og_card_data['key'])
+
+                if rds_update_condition(rdsConn, card_id, condition_label):
+                    # if OS fails, revert the DB
+                    if update_card_condition_os(user_id, card_id, condition_label) == 0:
+                        with rdsConn.cursor() as cursor:
+                            sql = "UPDATE cards SET card_condition_id = %s WHERE card_id = %s"
+                            cursor.execute(sql, (og_card_data['card_condition_id'], str(card_id),))
+                        unexpected_error('unable to update opensearch')
+
+                with rdsConn.cursor() as cursor:
+
+                    sql = """SELECT card_condition_name as condition_label, card_condition_descr as condition_desc, 
+                    user_id as owner_name, c.card_id, CONCAT(%s, card_s3_key) as path, card_label as label,
+                    max_price as max_value, min_price as min_value, `count`, mean_price as mean_value, timestamp
+                    FROM cards c
+                    LEFT JOIN card_conditions ON c.card_condition_id = card_conditions.card_condition_id
+                    LEFT JOIN ebay_price_data eb ON eb.ebay_price_data_id = (
+                        SELECT MAX(ebay_price_data_id) FROM ebay_price_data WHERE card_id = c.card_id
+                    )
+                    WHERE c.user_id = %s
+                        AND c.card_id = %s"""
+
+                    cursor.execute(sql, (pathUrl, str(user_id), str(card_id),))
+                    return real_response(process_card_obj(cursor.fetchone()))
 
         if httpMethod == "GET":
 
@@ -409,6 +439,50 @@ def update_card_labels_os(user_id, card_id, labels):
     return x['updated']
 
 
+def update_card_condition_os(user_id, card_id, condition):
+    # Put the user query into the query DSL for more accurate search results.
+    query = {
+        "query": {
+            "bool": {
+                "must": [
+                    {
+                        "match": {
+                            "user_id": user_id
+                        }
+                    },
+                    {
+                        "match": {
+                            "card_id": card_id
+                        }
+                    }
+                ]
+            }
+        },
+        "script": {
+            "source": "ctx._source.labels = params.labels",
+            "lang": "painless",
+            "params": {
+                "condition": condition
+            }
+        }
+    }
+
+    # Elasticsearch 6.x requires an explicit Content-Type header
+    http = urllib3.PoolManager()
+    headers = urllib3.make_headers(basic_auth=f"{os_username}:{os_pw}")
+    headers['Content-Type'] = 'application/json'
+
+    # Make the signed HTTP request
+    response = http.request('POST',
+                            os_url + "/_update_by_query",
+                            body=json.dumps(query),
+                            headers=headers,
+                            retries=False)
+    x = json.loads(response.data)
+
+    return x['updated']
+
+
 def delete_card_os(user_id, card_id):
     # Put the user query into the query DSL for more accurate search results.
     query = {
@@ -444,6 +518,30 @@ def delete_card_os(user_id, card_id):
     x = json.loads(response.data)
 
     return x['deleted']
+
+
+def rds_update_condition(conn, card_id, condition):
+    condition_id = None
+    card_condition_name = ""
+
+    # TODO implement failure handling - what if nothing is retrieved
+    with conn.cursor() as cursor:
+        sql = "SELECT `card_condition_id`, `card_condition_name` FROM `card_conditions` WHERE `card_condition_ml_label` = %s"
+        cursor.execute(sql, (str(condition),))
+        result = cursor.fetchone()
+        condition_id = result['card_condition_id']
+        card_condition_name = result['card_condition_name']
+
+    with conn.cursor() as cursor:
+        sql = "UPDATE `cards` SET `card_condition_id` = %s WHERE `card_id` = %s"
+        cursor.execute(sql, (condition_id, card_id))
+
+    return card_condition_name
+
+
+# TODO
+def invoke_sagemaker(bucket, key):
+    return 'NM'
 
 
 def unexpected_error(error):

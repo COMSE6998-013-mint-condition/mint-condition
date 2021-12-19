@@ -91,7 +91,14 @@ function Card(props) {
     console.log('reanalyzing card: ' + cardId)
     axios.post(url, {}, {headers}).then((response) => {
       if (response.status === 200) {
-        window.location.reload()
+        const card_name = response.data.path.substring(response.data.path.lastIndexOf('/') + 1, response.data.path.length)
+        setRows([createData(card_name, response.data.price_object.max_value,
+            response.data.condition_label,
+            response.data.price_object.mean_value,
+            response.data.condition_desc,
+            response.data.price_object.min_value,
+            response.data.label)])
+        setCard(response.data)
       } else {
         console.log('error: ' + response.statusText)
       }
