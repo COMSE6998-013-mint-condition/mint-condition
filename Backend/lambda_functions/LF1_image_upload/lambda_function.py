@@ -1,15 +1,15 @@
+import datetime
 import json
-import urllib3
-import urllib.parse
-import boto3
-import pymysql
 import os
 import time
+import urllib.parse
 
-from ebaysdk.finding import Connection
-from ebaysdk.exception import ConnectionError
-import datetime
+import boto3
 import math
+import pymysql
+import urllib3
+from ebaysdk.exception import ConnectionError
+from ebaysdk.finding import Connection
 
 region = 'us-east-1'
 s3=boto3.client('s3')
@@ -63,15 +63,14 @@ def lambda_handler(event, context):
     return
 
 
-# TODO
 def invoke_sagemaker(bucket, key):
     request_body = json.dumps({'bucket': bucket, 'key': key}).encode('utf-8')
 
     response = sm.invoke_endpoint(EndpointName='mint-condition-inference',
                                        ContentType='string',
                                        Body=request_body)
-                                       
-    return json.loads(response['Body'].read().decode()) 
+
+    return json.loads(response['Body'].read().decode())['body']
 
 
 def rds_insert(conn, user_id, label, time_created, bucket, key):

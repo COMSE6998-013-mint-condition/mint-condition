@@ -1,14 +1,13 @@
+import datetime
 import json
 import os
 
 import boto3
+import math
 import pymysql
 import urllib3
-
-from ebaysdk.finding import Connection
 from ebaysdk.exception import ConnectionError
-import datetime
-import math
+from ebaysdk.finding import Connection
 
 s3 = boto3.client('s3')
 
@@ -553,9 +552,14 @@ def rds_update_condition(conn, card_id, condition):
     return card_condition_name
 
 
-# TODO
 def invoke_sagemaker(bucket, key):
-    return 'NM'
+    request_body = json.dumps({'bucket': bucket, 'key': key}).encode('utf-8')
+
+    response = sm.invoke_endpoint(EndpointName='mint-condition-inference',
+                                  ContentType='string',
+                                  Body=request_body)
+
+    return json.loads(response['Body'].read().decode())['body']
 
 
 def unexpected_error(error):
