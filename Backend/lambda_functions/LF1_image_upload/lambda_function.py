@@ -11,9 +11,10 @@ from ebaysdk.exception import ConnectionError
 import datetime
 import math
 
-
 region = 'us-east-1'
 s3=boto3.client('s3')
+
+sm = boto3.client('runtime.sagemaker')
 
 os_host = os.environ['os_url']
 os_username = os.environ['os_username']
@@ -64,7 +65,14 @@ def lambda_handler(event, context):
 
 # TODO
 def invoke_sagemaker(bucket, key):
-    return 'GOOD'
+    request_body = json.dumps({'bucket': bucket, 'key': key}).encode('utf-8')
+
+    response = sm.invoke_endpoint(EndpointName='mint-condition-inference',
+                                       ContentType='string',
+                                       Body=request_body)
+                                       
+    return json.loads(response['Body'].read().decode()) 
+
 
 def rds_insert(conn, user_id, label, time_created, bucket, key):
     with conn.cursor() as cursor:
