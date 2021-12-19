@@ -37,10 +37,7 @@ function Card(props) {
   }
 
   const [prices, setPrices] = useState([
-    ['Time', 'Value'], [
-      location.state.card.price_object.timestamp,
-      location.state.card.price_object.mean_value
-    ]])
+    ['Time', 'Value']])
 
   const onUpdateClick = (event) => {
     setDialogOpen(true)
