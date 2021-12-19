@@ -161,8 +161,7 @@ def lambda_handler(event, context):
                         return unexpected_error("card not found for user")
                     og_card_data = cursor.fetchone()
 
-                print(og_card_data)
-                condition_label = invoke_sagemaker(og_card_data['card_bucket'], og_card_data['key'])
+                condition_label = invoke_sagemaker(og_card_data['card_bucket'], og_card_data['card_s3_key'])
 
                 if rds_update_condition(rdsConn, card_id, condition_label):
                     # if OS fails, revert the DB
