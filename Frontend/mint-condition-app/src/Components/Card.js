@@ -153,11 +153,12 @@ function Card(props) {
                 </TableRow>
                 <TableRow>
                   <TableCell style={{fontSize: 18}}>
+                    {rows[0].name}
+                    <br/>
                     <img key={location.state.card.path}
                          src={location.state.card.path}
                          alt={location.state.card.path}
-                         width={50}/>
-                    {rows[0].name}
+                         width={100}/>
                   </TableCell>
                   <TableCell style={{fontSize: 18}}>{rows[0].max_val}</TableCell>
                 </TableRow>
