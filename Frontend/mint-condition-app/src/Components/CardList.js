@@ -12,7 +12,7 @@ function CardList(props) {
                 <Box maxWidth='xl' style={{flexGrow: 1, padding: 10}}>
                     <ImageList cols={4} rowHeight={300} gap={10} style={{flexGrow: 1}}>
                         {
-                            props.cards?.map((card) => (
+                            props.cards?.reverse().map((card) => (
                                 <ImageListItem key={card.path}>
                                     <img
                                         key={card.path}
