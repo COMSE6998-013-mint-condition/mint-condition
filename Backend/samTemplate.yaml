@@ -99,7 +99,10 @@ Resources:
       MemorySize: 128
       Timeout: 15
       Layers:
-         - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-PyMySQL:4
+        - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-PyMySQL:4
+        - !Ref EbaySDKLayer
+        - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-requests:25
+        - arn:aws:lambda:us-east-1:770693421928:layer:Klayers-python38-lxml:7
       Environment:
         Variables:
           os_pw : '{{resolve:secretsmanager:mint-condition-os-secrets:SecretString:os_pw}}'
@@ -114,6 +117,7 @@ Resources:
       Policies:
         - AWSSecretsManagerGetSecretValuePolicy:
             SecretArn: !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:*'
+        
   ## Lambda for Ebay Account Deletion Notification: https://developer.ebay.com/marketplace-account-deletion#optingOut
   MINTLF4:
     Type: 'AWS::Serverless::Function'
