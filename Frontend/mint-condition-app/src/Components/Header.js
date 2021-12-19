@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import {Container, Typography} from '@material-ui/core';
+import {Box, Paper, Typography} from '@material-ui/core';
 import pikachu from '../assets/pikachu.jpg'
 import {Link, useNavigate} from "react-router-dom";
 import {clear_auth_code, get_user_info} from '../utils/auth_helpers';
@@ -111,66 +111,72 @@ function Header({setCards}) {
   }, [])
 
   return (
-      <Container maxWidth='lg'>
-          <UploadConfirmation visible={dialogOpen}
-                              handleUpload={uploadPhoto}
-                              handleClose={handleDialogClose}
-          />
-          <Grid container
-                item
-                spacing={2}
-                direction='row'
-                justifyContent='space-evenly'
-                alignItems='center'
-          >
-              <Grid container item
-                    direction='column'
-                    alignItems='flex-end'
-                    style={{marginRight: 50, marginTop: 50}}
-              >
-                  <Link to="/User">
-                      {username}
-                  </Link>
-                  <Button onClick={onSignOut}>
-                      Sign Out
-                  </Button>
-              </Grid>
-              <Grid container item
+      <Paper>
+          <Box maxWidth='lg'>
+              <UploadConfirmation visible={dialogOpen}
+                                  handleUpload={uploadPhoto}
+                                  handleClose={handleDialogClose}
+              />
+              <Grid container
+                    item
+                    spacing={2}
                     direction='row'
+                    justifyContent='space-between'
                     alignItems='center'
-                    style={{marginLeft: 50,}}
               >
-                  <Typography variant="h3"
-                              onClick={() => navigate('/homepage')}
-                  >
-                      Mint Condition
-                  </Typography>
-                  <img src={pikachu}
-                       onClick={() => navigate('/homepage')}
-                       alt='pikachu'
-                       style={{height: 120, width: 120, marginLeft: 10}}
-                  />
-              </Grid>
-              {setCards && typeof setCards === 'function' &&
-                  <Grid container item justifyContent='center'>
-                      <SearchBar setPhotos={setCards}/>
-                      <input id="file"
-                             type="file"
-                             ref={inputFile}
-                             onChange={onChangeFile.bind(this)}
-                             style={{display: 'none'}}
-                      />
-                      <IconButton color="primary"
-                                  aria-label="upload picture"
-                                  component="span"
-                                  style={{margin: 10}}
-                                  onClick={() => inputFile.current.click()}>
-                          <UploadFileIcon/>
-                      </IconButton>
+                  <Grid item>
+                      <Grid container item
+                            direction='row'
+                            alignItems='center'
+                      >
+                          <img src={pikachu}
+                               onClick={() => navigate('/homepage')}
+                               alt='pikachu'
+                               style={{height: 120, width: 120, marginLeft: 10}}
+                          />
+                          <Typography variant="h3"
+                                      onClick={() => navigate('/homepage')}
+                          >
+                              Mint Condition
+                          </Typography>
+                      </Grid>
                   </Grid>
-              }
-          </Grid>
-      </Container>
+                  <Grid item style={{marginRight: 30, marginTop: 50}}>
+                      <Grid container item
+                            direction='column'
+                            alignItems='flex-end'
+
+                      >
+                          <Link to="/User">
+                              {username}
+                          </Link>
+                          <Button onClick={onSignOut}>
+                              Sign Out
+                          </Button>
+                      </Grid>
+                  </Grid>
+
+                  {setCards && typeof setCards === 'function' &&
+                      <Grid container item justifyContent='center' style={{marginBottom: 15}}>
+                          <SearchBar setPhotos={setCards}/>
+                          <input id="file"
+                                 type="file"
+                                 ref={inputFile}
+                                 onChange={onChangeFile.bind(this)}
+                                 style={{display: 'none'}}
+                          />
+                          <IconButton color="primary"
+                                      aria-label="upload picture"
+                                      component="span"
+                                      style={{margin: 10}}
+                                      onClick={() => inputFile.current.click()}>
+                              <UploadFileIcon/>
+                          </IconButton>
+                      </Grid>
+                  }
+              </Grid>
+          </Box>
+      </Paper>
   )
 }
 
