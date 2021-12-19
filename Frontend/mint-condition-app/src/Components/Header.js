@@ -41,7 +41,10 @@ function Header({setCards}) {
     useEffect(() => {
         // get user info, then set user info, then get cards
         get_user_info().then(response => {
-            setUserInfo(response[0]);
+            if (response) {
+                setUserInfo(response[0]);
+            }
+
         });
     }, [])
 
