@@ -44,7 +44,6 @@ function Header({setCards}) {
             if (response) {
                 setUserInfo(response[0]);
             }
-
         });
     }, [])
 
