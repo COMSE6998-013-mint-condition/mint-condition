@@ -26,9 +26,12 @@ os_url = os_host + os_index
 # Ebay client
 
 client = Connection(
-    domain='svcs.ebay.com', # SANDBOX: svcs.sandbox.ebay.com
-    appid=os.environ['EBAY_PROD_CLIENT_ID'], 
+    domain='svcs.ebay.com',  # SANDBOX: svcs.sandbox.ebay.com
+    appid=os.environ['EBAY_PROD_CLIENT_ID'],
     config_file=None)
+
+sm = boto3.client('runtime.sagemaker')
+
 
 def lambda_handler(event, context):
     pathUrl = "http://dcmt4a9xlixn7.cloudfront.net/"
