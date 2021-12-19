@@ -117,7 +117,13 @@ Resources:
       Policies:
         - AWSSecretsManagerGetSecretValuePolicy:
             SecretArn: !Sub 'arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:*'
-        
+        - Statement:
+            - Sid: SageMakerInvokeEndpointPolicy
+              Effect: Allow
+              Action:
+                - sagemaker:InvokeEndpoint
+              Resource: '*'
+
   ## Lambda for Ebay Account Deletion Notification: https://developer.ebay.com/marketplace-account-deletion#optingOut
   MINTLF4:
     Type: 'AWS::Serverless::Function'
