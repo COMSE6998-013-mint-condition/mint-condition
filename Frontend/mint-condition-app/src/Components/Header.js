@@ -111,7 +111,7 @@ function Header({setCards}) {
   }, [])
 
   return (
-      <Paper>
+      <Paper style={{marginTop: 30}}>
           <Box maxWidth='lg'>
               <UploadConfirmation visible={dialogOpen}
                                   handleUpload={uploadPhoto}

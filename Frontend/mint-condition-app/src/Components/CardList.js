@@ -9,7 +9,7 @@ function CardList(props) {
     return (
         <Container maxWidth='xl'>
             <Paper style={{margin: 15}}>
-                <Box maxWidth='xl' style={{flexGrow: 1}}>
+                <Box maxWidth='xl' style={{flexGrow: 1, padding: 10}}>
                     <ImageList cols={4} rowHeight={300} gap={10} style={{flexGrow: 1}}>
                         {
                             props.cards?.map((card) => (
