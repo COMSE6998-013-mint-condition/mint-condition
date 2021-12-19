@@ -149,6 +149,7 @@ function Card(props) {
             response.data.condition_desc,
             response.data.price_object.min_value,
             response.data.label)])
+        setCard(response.data)
       } else {
         console.log('error: ' + response.statusText)
       }
