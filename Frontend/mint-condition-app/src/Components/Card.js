@@ -14,6 +14,7 @@ import {Button, Paper} from "@mui/material";
 import axios from "axios";
 import React, {useEffect, useState} from "react";
 import {Chart} from "react-google-charts";
+import UploadConfirmation from "./UploadConfirmation";
 
 function createData(name, max_val, quality, mean_val, quality_desc, min_val, label) {
   return {name, max_val, quality, mean_val, quality_desc, min_val, label};
@@ -26,6 +27,8 @@ function Card(props) {
   const location = useLocation();
   const [cards, setCards] = useState()
   const [rows, setRows] = useState([createData('n/a', 0, 'n/a', 0, 'n/a', 0)])
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [labels, setLabels] = useState("");
 
   let cardId = ''
   if (location.state && location.state.card) {
@@ -39,6 +42,18 @@ function Card(props) {
       location.state.card.price_object.mean_value
     ]])
 
+  const onUpdateClick = (event) => {
+    setDialogOpen(true)
+  }
+
+  const handleDialogClose = () => {
+    setDialogOpen(false)
+  }
+
+  const updateCardLabel = (labels) => {
+    setLabels(labels)
+  }
+
   useEffect(() => {
     if (cardId) {
       const url = 'https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/prod/card/' + cardId
@@ -48,7 +63,7 @@ function Card(props) {
       }
       axios.get(url, {headers}).then((response) => {
         if (response.status === 200) {
-          let card_name = response.data.path.substring(response.data.path.lastIndexOf('/') + 1, response.data.path.length)
+          const card_name = response.data.path.substring(response.data.path.lastIndexOf('/') + 1, response.data.path.length)
           setRows([createData(card_name, response.data.price_object.max_value,
               response.data.condition_label,
               response.data.price_object.mean_value,
@@ -122,21 +137,36 @@ function Card(props) {
     }
     const body = {
       'id': cardId,
-      'label': 'add_label_here'
+      'label': labels
     }
     console.log('updating card: ' + cardId)
-    axios.post(url, body,{headers}).then((response) => {
-      if(response.status === 200)
-      {
-        window.location.reload()
+    axios.post(url, body, {headers}).then((response) => {
+      if (response.status === 200) {
+        const card_name = response.data.path.substring(response.data.path.lastIndexOf('/') + 1, response.data.path.length)
+        setRows([createData(card_name, response.data.price_object.max_value,
+            response.data.condition_label,
+            response.data.price_object.mean_value,
+            response.data.condition_desc,
+            response.data.price_object.min_value,
+            response.data.label)])
       } else {
         console.log('error: ' + response.statusText)
       }
     })
   }
 
+  useEffect(() => {
+    if (labels) {
+      updateCard()
+    }
+  }, [labels])
+
   return (
       <Container>
+        <UploadConfirmation visible={dialogOpen}
+                            handleUpload={updateCardLabel}
+                            handleClose={handleDialogClose}
+        />
         <Header setCards={setCards}/>
         <Grid container direction='row' style={{flex: 1, marginTop: 15, marginBottom: 15}}>
           <TableContainer>
@@ -186,7 +216,7 @@ function Card(props) {
                 </TableRow>
                 <TableRow>
                   <TableCell style={{fontSize: 18}}>
-                    <Button variant="contained" style={{margin: 5}} onClick={updateCard}>
+                    <Button variant="contained" style={{margin: 5}} onClick={onUpdateClick}>
                       Update
                     </Button>
                     <Button variant="contained" style={{margin: 5}} onClick={reAnalyzeCard}>
