@@ -1,10 +1,10 @@
 import * as React from 'react';
+import {useState} from 'react';
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';
-import { useState } from 'react';
 
 export default function SearchBar(props) {
 
@@ -31,10 +31,10 @@ export default function SearchBar(props) {
       console.log(search_params)
 
       if(search_params[0] !== ""){
-        config.params['label'] = search_params[0]
+        config.params['label'] = search_params[0].trim()
       }
       if(search_params.length > 1 && search_params[1] !== "") {
-        config.params['condition'] = search_params[1]
+        config.params['condition'] = search_params[1].trim()
       }
 
       axios.get(url, config).then((response) =>  {

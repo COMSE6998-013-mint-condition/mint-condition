@@ -3,10 +3,8 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import {Container, Typography} from '@material-ui/core';
 import pikachu from '../assets/pikachu.jpg'
-import { useNavigate } from "react-router-dom";
-import {Link} from "react-router-dom"
-import { clear_auth_code } from '../utils/auth_helpers';
-import { get_user_info } from '../utils/auth_helpers';
+import {Link, useNavigate} from "react-router-dom";
+import {clear_auth_code, get_user_info} from '../utils/auth_helpers';
 import SearchBar from "./SearchBar";
 import axios from "axios";
 import {IconButton} from "@mui/material";
@@ -146,6 +144,7 @@ function Header({setCards}){
                    <IconButton color="primary"
                                aria-label="upload picture"
                                component="span"
+                               style={{margin: 10}}
                                onClick={() => inputFile.current.click()}>
                     <UploadFileIcon />
                    </IconButton>
