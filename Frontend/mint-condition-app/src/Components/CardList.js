@@ -23,7 +23,7 @@ function CardList(props) {
                                         src={card.path}
                                         alt={card.path}
                                         onClick={() => {
-                                            navigate('/card', {state: {'card': card, 'cards': props.cards}})
+                                            navigate(`/card/${card.card_id}`)
                                             window.location.reload()
                                         }}
                                     />

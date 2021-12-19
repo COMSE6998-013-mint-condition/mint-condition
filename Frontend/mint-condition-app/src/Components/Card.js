@@ -9,7 +9,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import {check_auth_code} from '../utils/auth_helpers';
-import {useLocation, useNavigate} from 'react-router-dom';
+import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import {Button, Paper} from "@mui/material";
 import axios from "axios";
 import React, {useEffect, useState} from "react";
@@ -24,20 +24,14 @@ function Card(props) {
   check_auth_code();
 
   const navigate = useNavigate()
+  let {cardId} = useParams();
   const location = useLocation();
   const [cards, setCards] = useState()
   const [rows, setRows] = useState([createData('n/a', 0, 'n/a', 0, 'n/a', 0)])
   const [dialogOpen, setDialogOpen] = useState(false);
   const [labels, setLabels] = useState("");
-
-  let cardId = ''
-  if (location.state && location.state.card) {
-    const card = location.state.card;
-    cardId = card.card_id
-  }
-
-  const [prices, setPrices] = useState([
-    ['Time', 'Value']])
+  const [prices, setPrices] = useState([['Time', 'Value']])
+  const [card, setCard] = useState()
 
   const onUpdateClick = (event) => {
     setDialogOpen(true)
@@ -52,6 +46,7 @@ function Card(props) {
   }
 
   useEffect(() => {
+    console.log(cardId)
     if (cardId) {
       const url = 'https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/prod/card/' + cardId
       const headers = {
@@ -67,6 +62,7 @@ function Card(props) {
               response.data.condition_desc,
               response.data.price_object.min_value,
               response.data.label)])
+          setCard(response.data)
         }
       }).then(() => {
         getPrices()
@@ -182,9 +178,9 @@ function Card(props) {
                   <TableCell style={{fontSize: 18}}>
                     {rows[0].name}
                     <br/>
-                    <img key={location.state.card.path}
-                         src={location.state.card.path}
-                         alt={location.state.card.path}
+                    <img key={card?.path}
+                         src={card?.path}
+                         alt={card?.path}
                          width={100}/>
                   </TableCell>
                   <TableCell style={{fontSize: 18}}>{rows[0].max_val}</TableCell>
