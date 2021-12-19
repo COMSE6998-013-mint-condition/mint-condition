@@ -55,12 +55,12 @@ function Header({setCards}) {
     }, [userInfo])
 
     useEffect(() => {
-        // if user info hasn't been retrieved yet, set a 1 second timeout and try again. dangerous cuz this recurses forever...
-        if (!userInfo) {
-            console.log('no user info yet...')
-            return 0;
-        }
         if (labels && selectedPhoto !== null) {
+            // if user info hasn't been retrieved yet, set a 1 second timeout and try again. dangerous cuz this recurses forever...
+            if (!userInfo) {
+                console.log('no user info yet...')
+                return 0;
+            }
             const url = 'https://3zd6ttzexc.execute-api.us-east-1.amazonaws.com/prod/upload'
             const user = userInfo['user_id']
             const key = selectedPhoto.name
