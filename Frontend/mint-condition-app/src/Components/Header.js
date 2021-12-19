@@ -80,7 +80,7 @@ function Header({setCards}) {
                 if (response.status === 200) {
                     setTimeout(function () {
                         window.location.reload();
-                    }, 2000);
+                    }, 4000);
                 } else {
                     console.log('Upload failed')
                 }

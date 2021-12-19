@@ -5,6 +5,7 @@ import User from './Components/User'
 import HomePage from './Components/HomePage'
 
 function App() {
+  document.title = 'Mint Condition'
   return (
     <Router>
       <Routes>
