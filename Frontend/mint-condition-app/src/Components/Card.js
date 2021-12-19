@@ -162,67 +162,69 @@ function Card(props) {
         />
         <Header setCards={setCards}/>
         <Grid container direction='row' style={{flex: 1, marginTop: 15, marginBottom: 15}}>
-          <TableContainer>
-            <Table style={{background: '#D4F1F4'}} sx={{minWidth: 600, minHeight: 400}} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell style={{fontSize: 30}}><strong>Card Features</strong></TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  <TableCell style={{fontSize: 18}}><strong>Card Name</strong></TableCell>
-                  <TableCell style={{fontSize: 18}}><strong>Maximum Value of Card</strong></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{fontSize: 18}}>
-                    {rows[0].name}
-                    <br/>
-                    <img key={card?.path}
-                         src={card?.path}
-                         alt={card?.path}
-                         width={100}/>
-                  </TableCell>
-                  <TableCell style={{fontSize: 18}}>{rows[0].max_val}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{fontSize: 18}}><strong>Card Quality</strong></TableCell>
-                  <TableCell style={{fontSize: 18}}><strong>Mean Value of Card</strong></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{fontSize: 18}}>{rows[0].quality}</TableCell>
-                  <TableCell style={{fontSize: 18}}>{rows[0].mean_val}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{fontSize: 18}}><strong>Description</strong></TableCell>
-                  <TableCell style={{fontSize: 18}}><strong>Minimum Value of Card</strong></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{fontSize: 18}}>{rows[0].quality_desc}</TableCell>
-                  <TableCell style={{fontSize: 18}}>{rows[0].min_val}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{fontSize: 18}}><strong>Labels</strong></TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{fontSize: 18}}>{rows[0].label}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{fontSize: 18}}>
-                    <Button variant="contained" style={{margin: 5}} onClick={onUpdateClick}>
-                      Update
-                    </Button>
-                    <Button variant="contained" style={{margin: 5}} onClick={reAnalyzeCard}>
-                      Analyze
-                    </Button>
-                    <Button variant="contained" style={{margin: 5}} onClick={deleteCard}>
-                      Delete
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <Paper>
+            <TableContainer>
+              <Table style={{background: '#D4F1F4'}} sx={{minWidth: 600, minHeight: 400}} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell style={{fontSize: 30}}><strong>Card Features</strong></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  <TableRow>
+                    <TableCell style={{fontSize: 18}}><strong>Card Name</strong></TableCell>
+                    <TableCell style={{fontSize: 18}}><strong>Maximum Value of Card</strong></TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell style={{fontSize: 18}}>
+                      {rows[0].name}
+                      <br/>
+                      <img key={card?.path}
+                           src={card?.path}
+                           alt={card?.path}
+                           width={100}/>
+                    </TableCell>
+                    <TableCell style={{fontSize: 18}}>{rows[0].max_val}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell style={{fontSize: 18}}><strong>Card Quality</strong></TableCell>
+                    <TableCell style={{fontSize: 18}}><strong>Mean Value of Card</strong></TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell style={{fontSize: 18}}>{rows[0].quality}</TableCell>
+                    <TableCell style={{fontSize: 18}}>{rows[0].mean_val}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell style={{fontSize: 18}}><strong>Description</strong></TableCell>
+                    <TableCell style={{fontSize: 18}}><strong>Minimum Value of Card</strong></TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell style={{fontSize: 18}}>{rows[0].quality_desc}</TableCell>
+                    <TableCell style={{fontSize: 18}}>{rows[0].min_val}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell style={{fontSize: 18}}><strong>Labels</strong></TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell style={{fontSize: 18}}>{rows[0].label}</TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell style={{fontSize: 18}}>
+                      <Button variant="contained" style={{margin: 5}} onClick={onUpdateClick}>
+                        Update
+                      </Button>
+                      <Button variant="contained" style={{margin: 5}} onClick={reAnalyzeCard}>
+                        Analyze
+                      </Button>
+                      <Button variant="contained" style={{margin: 5}} onClick={deleteCard}>
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
         </Grid>
         <Paper>
           <Chart
