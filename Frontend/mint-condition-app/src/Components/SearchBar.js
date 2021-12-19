@@ -67,15 +67,21 @@ export default function SearchBar(props) {
       style={{backgroundColor:'#eeeeee'}}
     >
       <InputBase
-        sx={{ ml: 1, flex: 1 }}
-        placeholder="Search Cards"
-        inputProps={{ 'aria-label': 'search photos' }}
-        onKeyUp={(event) => { if(event.keyCode === 13) { handleSearch() } }} 
-        onChange={(event) => {setSearch(event.target.value)}}
-        inputRef={inputRef}
+          sx={{ml: 1, flex: 1}}
+          placeholder="Search Based on Label,Condition. Ex: Pikachu,Good"
+          inputProps={{'aria-label': 'search photos'}}
+          onKeyUp={(event) => {
+            if (event.keyCode === 13) {
+              handleSearch()
+            }
+          }}
+          onChange={(event) => {
+            setSearch(event.target.value)
+          }}
+          inputRef={inputRef}
       />
-      <IconButton sx={{ p: '10px' }} aria-label="search" onClick={handleSearch}>
-        <SearchIcon />
+      <IconButton sx={{p: '10px'}} aria-label="search" onClick={handleSearch}>
+        <SearchIcon/>
       </IconButton>
     </Paper>
   );
