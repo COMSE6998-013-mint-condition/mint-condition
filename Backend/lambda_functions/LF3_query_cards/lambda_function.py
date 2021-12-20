@@ -557,18 +557,19 @@ def rds_update_condition(conn, card_id, condition):
 
 
 def invoke_sagemaker(bucket, key):
+    condition_label = ''
     try:
         request_body = json.dumps({'bucket': bucket, 'key': key}).encode('utf-8')
         response = sm.invoke_endpoint(EndpointName='mint-condition-inference',
                                       ContentType='string',
                                       Body=request_body)
         results = json.loads(response['Body'].read().decode())
-        if results['statusCode'] != 200:
-            return ''
-        else:
-            return json.loads(response['Body'].read().decode())['body']
-    except:
-        return ''
+        if results['statusCode'] == 200:
+            condition_label = results['body']
+    except Exception as e:
+        print(f'could not analyze card | {e}')
+
+    return condition_label
 
 
 def unexpected_error(error):
