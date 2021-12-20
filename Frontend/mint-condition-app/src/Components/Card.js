@@ -153,6 +153,7 @@ function Card(props) {
             response.data.price_object.min_value,
             response.data.label)])
         setCard(response.data)
+        getPrices()
       } else {
         console.log('error: ' + response.statusText)
       }
