@@ -25,7 +25,7 @@ function CardList(props) {
                                     />
                                     <ImageListItemBar
                                         title={card.label}
-                                        style={{border: '4px outset ' + conditionColorMapper[card.condition_label]}}
+                                        style={{border: '4px solid ' + conditionColorMapper[card.condition_label]}}
                                     />
                                 </ImageListItem>
                             ))
