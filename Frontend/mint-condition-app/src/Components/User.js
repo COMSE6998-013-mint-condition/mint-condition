@@ -20,14 +20,19 @@ function createData(name, num_cards, purpose, total_val) {
 
 function User(){
   check_auth_code();
-  let user_email = null
   // init to dummy data
-  const [rows, setRows] = useState([createData('Arthur Pikachu', 159, 'Seller', 24)]);
+  const [rows, setRows] = useState([createData('N.A.', 'N.A.', 'N.A.', 'N.A.')]);
   get_user_info().then(response => {
     if(rows[0].name !== response[0]['email']){
-      user_email = response[0]['email']
-      setRows([createData(user_email, response[1], 'Trade', response[2])])
+      const user_email = response[0]['email']
+      if (response[1] == null || response[2] == null) {
+        setRows([createData(user_email, 'N.A.', 'Trade', 'N.A.')])
+      }
+      else {
+        setRows([createData(user_email, response[1], 'Trade', response[2])])
+      }
     }
+    
   })
 
   return (
