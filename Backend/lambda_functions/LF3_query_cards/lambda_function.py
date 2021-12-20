@@ -180,13 +180,14 @@ def lambda_handler(event, context):
 
                 condition_label = invoke_sagemaker(og_card_data['card_bucket'], og_card_data['card_s3_key'])
 
-                if rds_update_condition(rdsConn, card_id, condition_label):
-                    # if OS fails, revert the DB
-                    if update_card_condition_os(user_id, card_id, condition_label) == 0:
-                        with rdsConn.cursor() as cursor:
-                            sql = "UPDATE cards SET card_condition_id = %s WHERE card_id = %s"
-                            cursor.execute(sql, (og_card_data['card_condition_id'], str(card_id),))
-                        unexpected_error('unable to update opensearch')
+                if condition_label:
+                    if rds_update_condition(rdsConn, card_id, condition_label):
+                        # if OS fails, revert the DB
+                        if update_card_condition_os(user_id, card_id, condition_label) == 0:
+                            with rdsConn.cursor() as cursor:
+                                sql = "UPDATE cards SET card_condition_id = %s WHERE card_id = %s"
+                                cursor.execute(sql, (og_card_data['card_condition_id'], str(card_id),))
+                            unexpected_error('unable to update opensearch')
 
                 with rdsConn.cursor() as cursor:
 
@@ -556,13 +557,18 @@ def rds_update_condition(conn, card_id, condition):
 
 
 def invoke_sagemaker(bucket, key):
-    request_body = json.dumps({'bucket': bucket, 'key': key}).encode('utf-8')
-
-    response = sm.invoke_endpoint(EndpointName='mint-condition-inference',
-                                  ContentType='string',
-                                  Body=request_body)
-
-    return json.loads(response['Body'].read().decode())['body']
+    try:
+        request_body = json.dumps({'bucket': bucket, 'key': key}).encode('utf-8')
+        response = sm.invoke_endpoint(EndpointName='mint-condition-inference',
+                                      ContentType='string',
+                                      Body=request_body)
+        results = json.loads(response['Body'].read().decode())
+        if results['statusCode'] != 200:
+            return ''
+        else:
+            return json.loads(response['Body'].read().decode())['body']
+    except:
+        return ''
 
 
 def unexpected_error(error):

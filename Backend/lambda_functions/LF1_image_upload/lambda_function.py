@@ -41,42 +41,52 @@ def lambda_handler(event, context):
     key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
     s3_data = get_s3_metadata(key, bucket)
     label = s3_data['ResponseMetadata']['HTTPHeaders']['x-amz-meta-customlabels'] if 'x-amz-meta-customlabels' in s3_data['ResponseMetadata']['HTTPHeaders'] else ""
-    time_created = s3_data['LastModified'].strftime("%Y-%m-%dT%H:%M:%S.%fZ") #convert to a time.struct_time object -> will store as a unix timestamp
+    time_created = s3_data['LastModified'].strftime(
+        "%Y-%m-%dT%H:%M:%S.%fZ")  # convert to a time.struct_time object -> will store as a unix timestamp
     user_id = s3_data['ResponseMetadata']['HTTPHeaders']['x-amz-meta-user']
-    
+
     card_id = rds_insert(rdsConn, user_id, label, time_created, bucket, key)
 
     # ebay API
-    ebay_data = search_ebay(card_id=card_id, keywords=label.replace(',', ' ')) # returns dict of pricing data
+    ebay_data = search_ebay(card_id=card_id, keywords=label.replace(',', ' '))  # returns dict of pricing data
     if ebay_data:
         rds_insert_ebay(rdsConn, ebay_data)
 
-    condition = invoke_sagemaker(bucket, key) 
+    condition = invoke_sagemaker(bucket, key)
+    condition_name = ''
 
-    condition_name = rds_update_condition(rdsConn, card_id, condition)
+    if condition:
+        condition_name = rds_update_condition(rdsConn, card_id, condition)
 
     split_labels = [l.strip() for l in label.split(',')]
-    upload_to_opensearch(card_id=card_id, user_id=user_id, created_timestmap=time_created, labels=split_labels, condition=condition_name)
-    
+    upload_to_opensearch(card_id=card_id, user_id=user_id, created_timestmap=time_created, labels=split_labels,
+                         condition=condition_name)
+
     rdsConn.close()
-    
+
     return
 
 
 def invoke_sagemaker(bucket, key):
-    request_body = json.dumps({'bucket': bucket, 'key': key}).encode('utf-8')
-
-    response = sm.invoke_endpoint(EndpointName='mint-condition-inference',
-                                       ContentType='string',
-                                       Body=request_body)
-
-    return json.loads(response['Body'].read().decode())['body']
+    try:
+        request_body = json.dumps({'bucket': bucket, 'key': key}).encode('utf-8')
+        response = sm.invoke_endpoint(EndpointName='mint-condition-inference',
+                                      ContentType='string',
+                                      Body=request_body)
+        results = json.loads(response['Body'].read().decode())
+        if results['statusCode'] != 200:
+            return ''
+        else:
+            return json.loads(response['Body'].read().decode())['body']
+    except:
+        return ''
 
 
 def rds_insert(conn, user_id, label, time_created, bucket, key):
     with conn.cursor() as cursor:
         sql = "INSERT INTO `cards` (`card_label`, `card_bucket`, `card_s3_key`, `user_id`, `time_created`) VALUES (%s, %s, %s, %s, %s)"
-        cursor.execute(sql, (label, bucket, key, str(user_id), time.mktime(time.strptime(time_created, "%Y-%m-%dT%H:%M:%S.%fZ"))))
+        cursor.execute(sql, (
+            label, bucket, key, str(user_id), time.mktime(time.strptime(time_created, "%Y-%m-%dT%H:%M:%S.%fZ"))))
     return conn.insert_id()
 
 

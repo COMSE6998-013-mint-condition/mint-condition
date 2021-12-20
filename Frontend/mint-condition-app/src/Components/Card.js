@@ -15,6 +15,7 @@ import axios from "axios";
 import React, {useEffect, useState} from "react";
 import {Chart} from "react-google-charts";
 import UploadConfirmation from "./UploadConfirmation";
+import ImageDialog from "./ImageDialog";
 
 function createData(name, max_val, quality, mean_val, quality_desc, min_val, label) {
   return {name, max_val, quality, mean_val, quality_desc, min_val, label};
@@ -32,6 +33,8 @@ function Card(props) {
   const [labels, setLabels] = useState("");
   const [prices, setPrices] = useState([['Time', 'Value']])
   const [card, setCard] = useState()
+  const [showImageDialog, setShowImageDialog] = useState(false)
+  const [selectedPhoto, setSelectedPhoto] = useState("");
 
   const onUpdateClick = (event) => {
     setDialogOpen(true)
@@ -156,6 +159,15 @@ function Card(props) {
     })
   }
 
+  const handleImageClick = (event) => {
+    setSelectedPhoto(event.target)
+    setShowImageDialog(true)
+  }
+
+  const handleImageClose = () => {
+    setShowImageDialog(false)
+  }
+
   useEffect(() => {
     if (labels) {
       updateCard()
@@ -164,6 +176,8 @@ function Card(props) {
 
   return (
       <Container>
+        <ImageDialog visible={showImageDialog} item={selectedPhoto}
+                     handleClose={handleImageClose} maxWidth="10%"/>
         <UploadConfirmation visible={dialogOpen}
                             handleUpload={updateCardLabel}
                             handleClose={handleDialogClose}
@@ -190,7 +204,8 @@ function Card(props) {
                       <img key={card?.path}
                            src={card?.path}
                            alt={card?.path}
-                           width={100}/>
+                           width={100}
+                           onClick={handleImageClick}/>
                     </TableCell>
                     <TableCell style={{fontSize: 18}}>{rows[0].max_val}</TableCell>
                   </TableRow>
@@ -237,13 +252,17 @@ function Card(props) {
         <Paper>
           <Chart
               height={'600px'}
-              chartType="ScatterChart"
+              chartType="LineChart"
               loader={<div>Loading Chart</div>}
               data={prices}
               options={{
                 title: 'Value of Card Over Time',
                 hAxis: {title: 'Time'},
                 vAxis: {title: 'Value'},
+                pointSize: 10,
+                series: {
+                  0: {pointShape: 'polygon'},
+                },
                 legend: 'none',
               }}
               rootProps={{'data-testid': '1'}}
