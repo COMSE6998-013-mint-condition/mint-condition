@@ -31,7 +31,7 @@ function Card(props) {
   const [rows, setRows] = useState([createData('n/a', 0, 'n/a', 0, 'n/a', 0)])
   const [dialogOpen, setDialogOpen] = useState(false);
   const [labels, setLabels] = useState("");
-  const [prices, setPrices] = useState([['Time', 'Value']])
+  const [prices, setPrices] = useState([['Time', 'Mean Value', 'Max Value', 'Min Value']])
   const [card, setCard] = useState()
   const [showImageDialog, setShowImageDialog] = useState(false)
   const [selectedPhoto, setSelectedPhoto] = useState("");
@@ -116,11 +116,13 @@ function Card(props) {
     }
     axios.get(url, {headers}).then((response) => {
       if (response.status === 200) {
-        let priceArray = [['Time', 'Value']]
+        let priceArray = [['Time', 'Mean Value', 'Max Value', 'Min Value']]
         response.data.prices.forEach((priceObject) => {
           let price = [
             priceObject.timestamp,
-            priceObject.mean_value
+            priceObject.mean_value,
+            priceObject.max_value,
+            priceObject.min_value
           ]
           priceArray.push(price)
         })
@@ -153,10 +155,11 @@ function Card(props) {
             response.data.price_object.min_value,
             response.data.label)])
         setCard(response.data)
-        getPrices()
       } else {
         console.log('error: ' + response.statusText)
       }
+    }).then(() => {
+      getPrices()
     })
   }
 
@@ -257,14 +260,18 @@ function Card(props) {
               loader={<div>Loading Chart</div>}
               data={prices}
               options={{
-                title: 'Value of Card Over Time',
+                theme: 'material',
+                title: 'Value of Card in USD Over Time',
                 hAxis: {title: 'Time'},
                 vAxis: {title: 'Value'},
                 pointSize: 10,
-                series: {
-                  0: {pointShape: 'polygon'},
-                },
-                legend: 'none',
+                pointShape: 'polygon',
+                curveType: 'function',
+                animation: {
+                  startup: true,
+                  duration: 1000,
+                  easing: 'out',
+                }
               }}
               rootProps={{'data-testid': '1'}}
           />
