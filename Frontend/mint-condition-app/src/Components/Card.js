@@ -261,6 +261,10 @@ function Card(props) {
               data={prices}
               options={{
                 theme: 'material',
+                backgroundColor: {
+                  fill: '#FFD23F',
+                  fillOpacity: 0.2
+                },
                 title: 'Value of Card in USD Over Time',
                 hAxis: {title: 'Time'},
                 vAxis: {title: 'Value'},
