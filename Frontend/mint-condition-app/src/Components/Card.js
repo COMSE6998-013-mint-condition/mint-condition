@@ -188,9 +188,9 @@ function Card(props) {
         />
         <Header setCards={setCards}/>
         <Grid container direction='row' style={{flex: 1, marginTop: 15, marginBottom: 15}}>
-          <Paper>
+          <Paper style={{padding: 20, background: '#D4F1F4'}}>
             <TableContainer>
-              <Table style={{background: '#D4F1F4'}} sx={{minWidth: 600, minHeight: 400}} aria-label="simple table">
+              <Table sx={{minWidth: 600, minHeight: 400}} aria-label="simple table">
                 <TableHead>
                   <TableRow>
                     <TableCell style={{fontSize: 30}}><strong>Card Features</strong></TableCell>
