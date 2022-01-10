@@ -19,7 +19,10 @@ To address this problem, we built a web application that automatically grades tr
 
 Our models have proven that training the model from scratch performs better than simply fine-tuning the top layer of a pretrained network, perhaps because low-level visual features such as scratches, printing defects, and rounded corners are very important for grading trading cards.
 
-
+### Cloud Architecture
+<p align="center">
+<img src="Mint Condition AWS Architecture.png" width="768"/>
+</p>
 
 **Backend Team**
 Adam Carpentieri, Bharathi Saravanabhavan, Gursifath Bhasin, Taku Takamatsu
